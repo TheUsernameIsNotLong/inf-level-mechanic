@@ -1,9 +1,11 @@
 from character import *
 
 startLvl = int(input("Enter the level to start at: "))
-playerStats = stats(startLvl,0,0,0,0,0,0,0)
-player = character("You", playerStats)
-player.stats.set()
+startStats = stats(startLvl,0,0,0,0,0,0,0)
+startSkills = skills(5,5,5,5,5,5)
+defaultSkillPoints = 30
+player = character("You", startStats, startSkills)
+player.stats.setStats()
 
 while True:
     player.printStats()
