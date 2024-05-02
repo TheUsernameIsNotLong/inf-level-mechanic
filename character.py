@@ -31,10 +31,9 @@ class stats:
         self.addExp(exp)
 
 class character:
-    def __init__(self, name:str, stats, skills):
+    def __init__(self, name:str, stats:stats):
         self.name = name
         self.stats = stats
-        self.skills = skills
     
     def printStats(self):
         print("~ CHARACTER SHEET ~")
@@ -49,13 +48,13 @@ class character:
         print(f"SPD:\t{self.stats.spd}")
 
 def calc_lvl(exp):
-    return math.floor((exp/20)**(1/3))
+    return math.floor((exp/100)**(1/2))
 
 def calc_expTotal(lvl):
-    return 20 * lvl**3
+    return 100 * lvl**2
 
 def calc_expGoal(lvl):
-    return (20 * lvl**3) - (20 * (lvl-1)**3)
+    return (100 * lvl**2) - (100 * (lvl-1)**2)
 
 def calc_hp(lvl):
     return lvl**2 + 99
