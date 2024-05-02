@@ -31,10 +31,9 @@ class stats:
         self.addExp(exp)
 
 class character:
-    def __init__(self, name:str, stats, skills):
+    def __init__(self, name:str, stats):
         self.name = name
         self.stats = stats
-        self.skills = skills
     
     def printStats(self):
         print("~ CHARACTER SHEET ~")
