@@ -1,18 +1,21 @@
 import math
-
-class stats:
-    def __init__(self, lvl:int, exp:int, hp:int, atk:int, dfc:int, mAtk:int, mDfc:int, spd:int):
+import status
+class Stats:
+    def __init__(self, lvl:int, exp:int, maxhp:int, hp:int, atk:int, dfc:int, mAtk:int, mDfc:int, spd:int):
         self.lvl = lvl
         self.exp = exp
+        self.maxhp = maxhp
         self.hp = hp
         self.atk = atk
         self.dfc = dfc
         self.mAtk = mAtk
         self.mDfc = mDfc
         self.spd = spd
+        self.setStats()
 
     def setStats(self):
-        self.hp = calc_hp(self.lvl)
+        self.maxhp = calc_hp(self.lvl)
+        self.hp = self.maxhp
         self.atk = calc_atk(self.lvl)
         self.dfc = calc_dfc(self.lvl)
         self.mAtk = calc_atk(self.lvl)
@@ -30,19 +33,21 @@ class stats:
         exp = calc_expTotal(lvl + self.lvl) - calc_expTotal(self.lvl)
         self.addExp(exp)
 
-class character:
-<<<<<<< HEAD
-<<<<<<< HEAD
-    def __init__(self, name:str, stats):
-=======
-    def __init__(self, name:str, stats:stats):
->>>>>>> 5eef6d4d1725264ca735e6a26e48cfead9be1324
-=======
-    def __init__(self, name:str, stats, skills):
->>>>>>> parent of 5eef6d4 (updated stuff)
+class Character:
+
+    def __init__(self, name:str, stats:Stats):
         self.name = name
         self.stats = stats
-        self.skills = skills
+    
+    def knockout(self):
+        print(f"{self.name} has fallen!")
+    
+    def harm(self, hp):
+        self.stats.hp -= hp
+        if self.stats.hp <= 0:
+            self.knockout()
+            
+    def add_status
     
     def printStats(self):
         print("~ CHARACTER SHEET ~")
@@ -57,22 +62,22 @@ class character:
         print(f"SPD:\t{self.stats.spd}")
 
 def calc_lvl(exp):
-    return math.floor((exp/20)**(1/3))
+    return math.floor((exp/100)**(1/2))
 
 def calc_expTotal(lvl):
-    return 20 * lvl**3
+    return 100 * lvl**2
 
 def calc_expGoal(lvl):
-    return (20 * lvl**3) - (20 * (lvl-1)**3)
+    return (100 * lvl**2) - (100 * (lvl-1)**2)
 
 def calc_hp(lvl):
     return lvl**2 + 99
 
 def calc_atk(lvl):
-    return round(lvl**1.7 + 19)
+    return round((0.2*lvl**2) + 19.8)
 
 def calc_dfc(lvl):
-    return round(lvl**1.5 + 9)
+    return round((0.15*lvl**2) + 14.85)
 
 def calc_spd(lvl):
-    return round(lvl**1.3 + 4)
+    return round((0.1*lvl**2) + 9.9)
