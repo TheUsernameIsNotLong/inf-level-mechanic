@@ -1,6 +1,7 @@
 import math
-import status
+from status import *
 class Stats:
+    
     def __init__(self, lvl:int, exp:int, maxhp:int, hp:int, atk:int, dfc:int, mAtk:int, mDfc:int, spd:int):
         self.lvl = lvl
         self.exp = exp
@@ -38,16 +39,29 @@ class Character:
     def __init__(self, name:str, stats:Stats):
         self.name = name
         self.stats = stats
-    
-    def knockout(self):
-        print(f"{self.name} has fallen!")
+        self.activeStates = []
+        self.canHeal = True #can recieve healing from any healing source
     
     def harm(self, hp):
         self.stats.hp -= hp
         if self.stats.hp <= 0:
-            self.knockout()
+            self.stats.hp = 0
+            self.addStatus(KO)
+    
+    def heal(self, hp):
+        self.stats.hp += hp
+        if self.stats.hp > self.stats.maxhp:
+            self.stats.hp = self.stats.maxhp
             
-    def add_status
+    def addStatus(self, status:Status):
+        self.activeStates.append(status)
+    
+    def removeStatus(self, status:Status):
+        try:
+            self.activeStates.remove(status)
+            print(f"{self.name} is no longer inflicted with {status.name}!")
+        except:
+            print(f"{self.name} is not inflicted with {status.name}!")
     
     def printStats(self):
         print("~ CHARACTER SHEET ~")
