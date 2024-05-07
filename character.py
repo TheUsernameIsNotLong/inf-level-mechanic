@@ -25,7 +25,7 @@ class Stats:
 
     def addExp(self, exp):
         self.exp += exp
-        while self.exp >= calc_expGoal(self.lvl):
+        while self.exp >= calc_expGoal(self.lvl): #maybe look into optimising from O(n) to O(1)
             self.exp -= calc_expGoal(self.lvl)
             self.lvl += 1
         self.setStats()
@@ -36,17 +36,21 @@ class Stats:
 
 class Character:
 
-    def __init__(self, name:str, stats:Stats):
+    def __init__(self, name:str, stats:Stats, player:bool):
         self.name = name
         self.stats = stats
+        self.player = player
         self.activeStates = []
-        self.canHeal = True #can recieve healing from any healing source
+        # VVV Passive States VVV
+        self.canHeal = True # Can recieve healing from any healing source
+        # VVV Current Actions VVV
+        self.battle = None # Is this character currently in a battle?
     
     def harm(self, hp):
         self.stats.hp -= hp
         if self.stats.hp <= 0:
-            self.stats.hp = 0
-            self.addStatus(KO)
+            self.stats.hp = 0 # Do not allow negative health
+            self.addStatus(KO())
     
     def heal(self, hp):
         self.stats.hp += hp
@@ -55,6 +59,8 @@ class Character:
             
     def addStatus(self, status:Status):
         self.activeStates.append(status)
+        if isinstance(status, KO): # Run status effect immediately if defeated
+            status.apply(self)
     
     def removeStatus(self, status:Status):
         try:
@@ -62,6 +68,12 @@ class Character:
             print(f"{self.name} is no longer inflicted with {status.name}!")
         except:
             print(f"{self.name} is not inflicted with {status.name}!")
+    
+    def checkStatus(self, status:Status):
+        for s in self.activeStates:
+            if isinstance(s, status):
+                return True
+        return False
     
     def printStats(self):
         print("~ CHARACTER SHEET ~")

@@ -16,6 +16,11 @@ class KO(Status):
     def apply(self, char):
         print(f"{char.name} has been knocked out!")
         char.canHeal = False
+        if char.battle != None:
+            if char.player == True:
+                char.battle.end(0)
+            else:
+                char.battle.end(2)
     
 class Poison(Status):
     def __init__(self, lvl:int):
