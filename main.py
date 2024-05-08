@@ -8,22 +8,27 @@ while True:
     else:
         print("Your name should be between 1 and 20 letters long!") 
 
-while True:
-    try:
-        startLvl = int(input("Please enter the level to start at: "))
-        if startLvl >= 1:
-            break
-        else:
-            print("Please enter a positive number!")
-    except:
-        print("Please enter a positive number!")
+# while True:
+#     try:
+#         startLvl = int(input("Please enter the level to start at: "))
+#         if startLvl >= 1:
+#             break
+#         else:
+#             print("Please enter a positive number!")
+#     except:
+#         print("Please enter a positive number!")
+startLvl = 5
 
 player = Character(playerName, Stats(startLvl,0,0,0,0,0,0,0,0), True)
 enemy = Character("Enemy", Stats(startLvl,0,0,0,0,0,0,0,0), False)
 player.printStats()
 # player.removeStatus(Poison(1))
 
-fight = battle(player, enemy)
+while True:
+    battle(player, enemy)
+    enemy.stats.hp = enemy.stats.maxhp
+    player.stats.hp = player.stats.maxhp
+    enemy.stats.addExp(300)
 
 # while True:
 #     player.printStats()

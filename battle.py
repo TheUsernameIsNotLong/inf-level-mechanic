@@ -11,7 +11,6 @@ def healthBar(char:Character):
 def applyStatusEffects(char:Character):
     for status in char.activeStates:
         status.apply(char)
-    
 class battle:
     def __init__(self, char1:Character, char2:Character):
         self.char1 = char1
@@ -51,6 +50,8 @@ class battle:
         self.action(char2, char1)
     
     def action(self, char1:Character, char2:Character):
+        if self.active != True:
+            return #Exit the battle
         if char1.player == True:
             for i in range(len(self.battleActions)):
                 print(f"{i+1}. {self.battleActions[i]}")
@@ -81,8 +82,13 @@ class battle:
         elif outcome == 1: # Escape
             print("You fled the battle!")
         elif outcome == 2: # Win
+            battleExp = self.calcBattleExp(self.char2)
+            battleGold = self.calcBattleGold(self.char2)
             print("Battle is over!")
-            print("rewards:")
+            print("Rewards:")
+            print(f"Exp.\t{battleExp}")
+            print(f"Gold\t{battleGold}")
+            self.char1.stats.addExp(battleExp)
         else:
             print("The battle ended unnaturally...?")
     
@@ -93,4 +99,10 @@ class battle:
         defender.harm(damage)
     
     def escape(self):
-        print("Escape battle")
+        self.end(1)
+    
+    def calcBattleExp(self, char:Character):
+        return round(120*(char.stats.lvl**(2/3)))
+
+    def calcBattleGold(self, char:Character):
+        return round(10*(char.stats.lvl**0.5))

@@ -21,6 +21,7 @@ class KO(Status):
                 char.battle.end(0)
             else:
                 char.battle.end(2)
+            char.removeStatus(self)
     
 class Poison(Status):
     def __init__(self, lvl:int):

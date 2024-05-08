@@ -28,6 +28,7 @@ class Stats:
         while self.exp >= calc_expGoal(self.lvl): #maybe look into optimising from O(n) to O(1)
             self.exp -= calc_expGoal(self.lvl)
             self.lvl += 1
+            print(f"You leveled up to Lvl. {self.lvl}!")
         self.setStats()
 
     def addLvl(self, lvl):
@@ -97,13 +98,13 @@ def calc_expGoal(lvl):
     return (100 * lvl**2) - (100 * (lvl-1)**2)
 
 def calc_hp(lvl):
-    return lvl**2 + 99
+    return round(75 + ((lvl**3 * 5)**0.5))
 
 def calc_atk(lvl):
-    return round((0.2*lvl**2) + 19.8)
+    return round(20 + (4 * lvl))
 
 def calc_dfc(lvl):
-    return round((0.15*lvl**2) + 14.85)
+    return round(15 + (3 * lvl))
 
 def calc_spd(lvl):
-    return round((0.1*lvl**2) + 9.9)
+    return round(10 + (2 * lvl))
