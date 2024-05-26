@@ -8,6 +8,18 @@ class Status:
     
     def apply(self, char):
         pass
+    
+class Status_Special(Status):
+    def __init__(self, name:str, desc:str):
+        Status.__init__(self, name, desc)
+
+class Status_Damage(Status):
+    def __init__(self, name:str, desc:str, duration:int):
+        Status.__init__(self, name, desc, duration)
+        
+class Status_State(Status):
+    def __init__(self, name:str, desc:str, duration:int):
+        Status.__init__(self, name, desc, duration)
 
 class KO(Status):
     def __init__(self):
@@ -74,3 +86,14 @@ class Lock(Status):
         
     def apply(self, char):
         print("Locked!")
+
+def effectPoison(self, char):
+        char.harm(floor(1-(1-char.stats.hp*0.05)**self.lvl))
+
+statusEffects = [(Status_Special("KO", "No health remaining.")),
+                 (Status_Damage("Poison", "Take reccuring damage.", 3)),
+                 (Status_Damage("Burn", "Take recurring flat damage.", 3)),
+                 (Status_Damage("Radiation", "Take reccuring damage.", 5)),
+                 (Status_State("Paralysis", "Unable to use physical attacks.", 3)),
+                 (Status_State("Silence", "Unable to use magical attacks.", 3)),
+                 (Status_State("Frozen", "Unable to move.", 3))]

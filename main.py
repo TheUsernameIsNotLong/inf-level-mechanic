@@ -28,7 +28,8 @@ while True:
     battle(player, enemy)
     enemy.stats.hp = enemy.stats.maxhp
     player.stats.hp = player.stats.maxhp
-    enemy.stats.addExp(300)
+    enemy.stats.lvl = player.stats.lvl
+    enemy.stats.setStats()
 
 # while True:
 #     player.printStats()
