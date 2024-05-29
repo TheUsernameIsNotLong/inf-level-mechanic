@@ -41,6 +41,7 @@ class Character:
         self.name = name
         self.stats = stats
         self.player = player
+        self.knownSkills = []
         self.activeStates = []
         # VVV Passive States VVV
         self.canHeal = True # Can recieve healing from any healing source
@@ -59,7 +60,12 @@ class Character:
             self.stats.hp = self.stats.maxhp
             
     def addStatus(self, status:Status):
-        self.activeStates.append(status)
+        print(f"{self.name} is inflicted with {status.name}!")
+        if isinstance(status, Status_Damage):
+            print(f"Status level: {status.lvl}")
+            if not status.stackable:
+                self.removeStatus(status)
+        self.activeStates.append(status) # This may replace statuses with lower duration/lvl
         if isinstance(status, KO): # Run status effect immediately if defeated
             status.apply(self)
     
@@ -69,12 +75,12 @@ class Character:
             print(f"{self.name} is no longer inflicted with {status.name}!")
         except:
             print(f"{self.name} is not inflicted with {status.name}!")
+
     
-    def checkStatus(self, status:Status):
+    def applyStatus(self):
         for s in self.activeStates:
-            if isinstance(s, status):
-                return True
-        return False
+            if isinstance(s, Status_Damage):
+                s.apply()
     
     def printStats(self):
         print("~ CHARACTER SHEET ~")

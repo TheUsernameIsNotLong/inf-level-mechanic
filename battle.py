@@ -1,17 +1,16 @@
 import random
 from character import Character
+from attack import *
 
 hp_Bars = 20
 
 def healthBar(char:Character):
     hp_Remaining = round(hp_Bars*char.stats.hp/char.stats.maxhp)
     hp_Lost = hp_Bars-hp_Remaining
-    print(f"|{"█"*hp_Remaining}{"_"*hp_Lost}|")
-    
-def applyStatusEffects(char:Character):
-    for status in char.activeStates:
-        status.apply(char)
-class battle:
+    hp_all = "|" + "█" * hp_Remaining + "_" * hp_Lost + "|"
+    print(hp_all)
+
+class Battle:
     def __init__(self, char1:Character, char2:Character):
         self.char1 = char1
         self.char2 = char2
@@ -22,6 +21,7 @@ class battle:
         self.char2.battle = self
         
         self.battleActions = ["Attack",
+                              "Special",
                               "Escape"]
         
         print(f"~ {char1.name}  VS. {char2.name} ~")
@@ -34,7 +34,10 @@ class battle:
     
     def turn(self, char1:Character, char2:Character):
         self.turnNum += 1
-        print(f"Turn {self.turnNum}:")
+        print(f"Turn {self.turnNum}...")
+        print()
+        self.applyDamageStates(char1)
+        self.applyDamageStates(char2)
         print()
         print(f"{char2.name}")
         print(f"HP: {char2.stats.hp}/{char2.stats.maxhp}")
@@ -44,10 +47,36 @@ class battle:
         print(f"HP: {char1.stats.hp}/{char1.stats.maxhp}")
         healthBar(char1)
         print()
-        applyStatusEffects(char1)
-        applyStatusEffects(char2)
         self.action(char1, char2)
         self.action(char2, char1)
+        self.decreaseStatusDuration(char1)
+        self.decreaseStatusDuration(char2)
+    
+    def applyDamageStates(self, char:Character):
+        for status in char.activeStates:
+            if isinstance(status, Status_Damage):
+                status.apply(char)
+    
+    def decreaseStatusDuration(self, char:Character):
+        for status in char.activeStates[:]:
+            if isinstance(status, Status_Damage) or isinstance(status, Status_State):
+                status.duration -= 1
+                if status.duration < 1:
+                    char.removeStatus(status)
+    
+    def specialAtkMenu(self, char1:Character, char2:Character):
+        if len(char1.knownSkills) >= 2:
+            print("Your skills:")
+            for i in range(len(char1.knownSkills)-1):
+                print(f"{i+1}. {char1.knownSkills[i+1].name}")
+            while True:
+                try:
+                    choice = int(input("Which special move: "))
+                    if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
+                        char1.knownSkills[choice].do(char1, char2)
+                        break
+                except:
+                    print("You can't do that!")
     
     def action(self, char1:Character, char2:Character):
         if self.active != True:
@@ -61,9 +90,12 @@ class battle:
                     if (choice >= 1) and (choice <= len(self.battleActions)):
                         match choice:
                             case 1:
-                                self.attack(char1, char2)
+                                char1.knownSkills[0].do(char1, char2)
                                 break
                             case 2:
+                                self.specialAtkMenu(char1, char2)
+                                break
+                            case 3:
                                 self.escape()
                                 break
                             case _:
@@ -71,7 +103,7 @@ class battle:
                 except:
                     print("You can't do that!")
         else:
-            self.attack(char1, char2)
+            char1.knownSkills[0].do(char1, char2)
     
     def end(self, outcome:int):
         self.active = False
@@ -92,11 +124,11 @@ class battle:
         else:
             print("The battle ended unnaturally...?")
     
-    def attack(self, attacker:Character, defender:Character):
-        randModifier = 0.75 + (random.random()/2)
-        damage = round(randModifier*((2*attacker.stats.atk) - (defender.stats.dfc)))
-        print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
-        defender.harm(damage)
+    # def attack(self, attacker:Character, defender:Character):
+    #     randModifier = 0.75 + (random.random()/2)
+    #     damage = round(randModifier*((2*attacker.stats.atk) - (defender.stats.dfc)))
+    #     print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
+    #     defender.harm(damage)
     
     def escape(self):
         self.end(1)
