@@ -18,7 +18,7 @@ while True:
 #             print("Please enter a positive number!")
 #     except:
 #         print("Please enter a positive number!")
-startLvl = 10000
+startLvl = 5
 
 player = Character(playerName, Stats(startLvl,0,0,0,0,0,0,0,0), True)
 enemy = Character("Enemy", Stats(startLvl,0,0,0,0,0,0,0,0), False)
