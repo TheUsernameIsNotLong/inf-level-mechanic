@@ -61,10 +61,6 @@ class Character:
             
     def addStatus(self, status:Status):
         print(f"{self.name} is inflicted with {status.name}!")
-        if isinstance(status, Status_Damage):
-            print(f"Status level: {status.lvl}")
-            if not status.stackable:
-                self.removeStatus(status)
         self.activeStates.append(status) # This may replace statuses with lower duration/lvl
         if isinstance(status, KO): # Run status effect immediately if defeated
             status.apply(self)

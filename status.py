@@ -42,7 +42,7 @@ class KO(Status_Special):
             char.removeStatus(self)
     
 class Poison(Status_Damage):
-    def __init__(self, lvl:float=1, duration:int=3):
+    def __init__(self, lvl:float=1, duration:int=4):
         super().__init__("Poison", "Take reccuring damage.", lvl, duration, True)
         
     def apply(self, char):

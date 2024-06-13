@@ -2,7 +2,7 @@ import random
 from character import Character
 from attack import *
 
-hp_Bars = 20
+hp_Bars = 50
 
 def healthBar(char:Character):
     hp_Remaining = round(hp_Bars*char.stats.hp/char.stats.maxhp)
@@ -53,9 +53,21 @@ class Battle:
         self.decreaseStatusDuration(char2)
     
     def applyDamageStates(self, char:Character):
+        groupedStates = {}
+        
         for status in char.activeStates:
             if isinstance(status, Status_Damage):
-                status.apply(char)
+                if status.stackable:
+                    if type(status) not in groupedStates:
+                        groupedStates[type(status)] = 0
+                    groupedStates[type(status)] += status.lvl
+                else:
+                    if type(status) not in groupedStates:
+                        groupedStates[type(status)] = status.lvl
+                    
+        for statusType, lvl in groupedStates.items():
+            tempStatus = statusType(lvl=lvl)
+            tempStatus.apply(char)
     
     def decreaseStatusDuration(self, char:Character):
         for status in char.activeStates[:]:
