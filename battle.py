@@ -2,7 +2,7 @@ import random
 from character import Character
 from attack import *
 
-hp_Bars = 50
+hp_Bars = 30
 
 def healthBar(char:Character):
     hp_Remaining = round(hp_Bars*char.stats.hp/char.stats.maxhp)

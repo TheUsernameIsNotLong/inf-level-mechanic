@@ -17,11 +17,18 @@ class Attack_Physical(Attack):
     def __init__(self, name:str, desc:str, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
         super().__init__(name, desc, instances, power, hitChance, status, statusChance)
     
+    def calcDamage(self, attacker:Character, defender:Character):
+        totalDmg = 0
+        for i in range(self.instances):
+            randModifier = 0.75 + (random.random()/2)
+            dmg = round(self.power*randModifier*((2*attacker.stats.atk) - (defender.stats.dfc))/200)
+            totalDmg += dmg
+            print(f"{attacker.name} attacked {defender.name} for {dmg} dmg!")
+        return totalDmg
+    
     def do(self, attacker:Character, defender:Character):
         print(f"{attacker.name} used {self.name}!")
-        randModifier = 0.75 + (random.random()/2)
-        damage = round(self.power*randModifier*((2*attacker.stats.atk) - (defender.stats.dfc))/200)
-        print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
+        damage = self.calcDamage(attacker, defender)
         defender.harm(damage)
         if self.status is not None:
             if random.random() <= self.statusChance:
@@ -32,11 +39,18 @@ class Attack_Magical(Attack):
     def __init__(self, name:str, desc:str, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
         super().__init__(name, desc, instances, power, hitChance, status, statusChance)
     
+    def calcDamage(self, attacker:Character, defender:Character):
+        totalDmg = 0
+        for i in range(self.instances):
+            randModifier = 0.75 + (random.random()/2)
+            dmg = round(self.power*randModifier*((2*attacker.stats.mAtk) - (defender.stats.mDfc))/200)
+            totalDmg += dmg
+            print(f"{attacker.name} attacked {defender.name} for {dmg} dmg!")
+        return totalDmg
+    
     def do(self, attacker:Character, defender:Character):
         print(f"{attacker.name} used {self.name}!")
-        randModifier = 0.75 + (random.random()/2)
-        damage = round(self.power*randModifier*((2*attacker.stats.mAtk) - (defender.stats.mDfc))/200)
-        print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
+        damage = self.calcDamage(attacker, defender)
         defender.harm(damage)
         if self.status is not None:
             if random.random() <= self.statusChance:
