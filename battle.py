@@ -2,9 +2,11 @@ import random
 from character import Character
 from attack import *
 
-hp_Bars = 30
+
 
 def healthBar(char:Character):
+    hp_Bars_Default = 20
+    hp_Bars = hp_Bars_Default + (2*char.stats.prof.hp)
     hp_Remaining = round(hp_Bars*char.stats.hp/char.stats.maxhp)
     hp_Lost = hp_Bars-hp_Remaining
     hp_all = "|" + "█" * hp_Remaining + "_" * hp_Lost + "|"

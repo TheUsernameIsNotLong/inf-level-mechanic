@@ -18,7 +18,7 @@ while True:
 #             print("Please enter a positive number!")
 #     except:
 #         print("Please enter a positive number!")
-startLvl = 5
+startLvl = 50
 
 def determineEnemyLvl():
     pLvl = player.stats.lvl
@@ -33,8 +33,15 @@ def determineEnemyLvl():
     # else:
     #     return random.randint(pLvl - 10, pLvl + 10)
 
-player = Character(playerName, Stats(startLvl,0,0,0,0,0,0,0,0), True)
-enemy = Character("Enemy", Stats(determineEnemyLvl(),0,0,0,0,0,0,0,0), False)
+profStandard = Proficiency(0,0,0,0,0,0)
+profOP = Proficiency(3,3,3,3,3,3)
+profWK = Proficiency(-3,-3,-3,-3,-3,-3)
+
+profTank = Proficiency(1,-1,3,-2,2,-3)
+profJuggernaut = Proficiency(3,1,1,-2,1,-2)
+
+player = Character(playerName, Stats(startLvl, profStandard), True)
+enemy = Character("Enemy", Stats(determineEnemyLvl(), profStandard), False)
 player.knownSkills.append(atkDefault)
 player.knownSkills.append(atkPsnSlash)
 player.knownSkills.append(atkToxSpore)
