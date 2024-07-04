@@ -49,8 +49,12 @@ class Battle:
         print(f"HP: {char1.stats.hp}/{char1.stats.maxhp}")
         healthBar(char1)
         print()
-        self.action(char1, char2)
-        self.action(char2, char1)
+        if char1.stats.spd >= char2.stats.spd:
+            self.action(char1, char2)
+            self.action(char2, char1)
+        else:
+            self.action(char2, char1)
+            self.action(char1, char2)
         self.decreaseStatusDuration(char1)
         self.decreaseStatusDuration(char2)
     

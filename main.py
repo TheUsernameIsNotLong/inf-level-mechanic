@@ -1,6 +1,7 @@
 from character import *
 from battle import *
 from attack import *
+from modifier import *
 
 while True:
     playerName = input("Please enter your name: ")
@@ -18,7 +19,7 @@ while True:
 #             print("Please enter a positive number!")
 #     except:
 #         print("Please enter a positive number!")
-startLvl = 50
+startLvl = 5000
 
 def determineEnemyLvl():
     pLvl = player.stats.lvl
@@ -48,13 +49,54 @@ player.knownSkills.append(atkToxSpore)
 player.knownSkills.append(atkBurnBlade)
 player.knownSkills.append(atkFlamethrower)
 enemy.knownSkills.append(atkDefault)
-player.printStats()
+# player.printStats()
+
+field = [enemy]
+
+def groupModifiers(modifierList):
+    groupedModifiers = []
+    for modifier in modifierList:
+        if isinstance(modifier, Modifier_Standard):
+            if modifier not in groupedModifiers:
+                groupedModifiers.append(modifier)
+            else:
+                groupedModifierIndex = groupedModifiers.index(modifier)
+                groupedModifiers[groupedModifierIndex].rank += 1
+    return groupedModifiers
+
+def decideModifiers(char:Character):
+    rankReset()
+    selecting = True
+    while selecting:
+        if char.stats.lvl < 10:
+            chance = 0
+        else:
+            chance = (1-((10*(1+len(char.modifiers))**2)/char.stats.lvl))**2
+        if random.random() <= chance:
+            modifier = random.choices(availableModifiers, [modifier.rarity for modifier in availableModifiers])[0]
+            char.modifiers.append(modifier)
+            char.stats.remLvl(5)
+        else:
+            selecting = False
+    groupedModifiers = groupModifiers(char.modifiers)
+    for modifier in groupedModifiers:
+        modifier.apply(char)
+    print([modifier.name for modifier in char.modifiers])
+    char.name = " ".join([*[f"<{modifier.name} {modifier.rank}>" for modifier in groupedModifiers],char.name])
+    
+
+def findEnemy():
+    enemy = random.choice(field)
+    decideModifiers(enemy)
+    return enemy
 
 while True:
-    Battle(player, enemy)
+    Battle(player, findEnemy())
     enemy.stats.hp = enemy.stats.maxhp
     player.stats.hp = player.stats.maxhp
     enemy.stats.lvl = determineEnemyLvl()
+    enemy.modifiers.clear()
+    enemy.name = "Enemy"
     enemy.stats.setStats()
 
 # while True:

@@ -80,6 +80,15 @@ class Stats:
     def addLvl(self, lvl):
         exp = self.calc_expTotal(lvl + self.lvl) - self.calc_expTotal(self.lvl)
         self.addExp(exp)
+    
+    def remLvl(self, lvl):
+        self.exp = 0
+        self.lvl -= lvl
+        self.setStats()
+        
+    def setLvl(self, lvl):
+        self.lvl = lvl
+        self.setStats()
 
 class Character:
 
@@ -89,6 +98,7 @@ class Character:
         self.player = player
         self.knownSkills = []
         self.activeStates = []
+        self.modifiers = []
         # VVV Passive States VVV
         self.canHeal = True # Can recieve healing from any healing source
         # VVV Current Actions VVV
