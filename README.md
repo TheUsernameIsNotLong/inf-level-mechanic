@@ -1,13 +1,32 @@
 # inf-level-mechanic
 
-At the moment, this only has a single enemy type which you fight over and over and gradually become stronger against.
+This is a demo to test infinite-scaling RPG stats (hp, attack, defence etc.), whilst seeing whether battles can be balanced.
 
+## current todo list
 
-What is planned (mostly in order):
+- Proper game intro (more than just asking for player name)
+    - Settings menu to change config values from the game
 
-1. Attacks (and a related menu to choose them)
-2. Enemy types (standard, tank, light etc.)
-3. Status effects (added but not used)
-4. Enemy modifiers
-5. World map
-- A lot more
+- Overworld system
+    - Grid-based map
+    - Locked regions, criteria must be met to progress
+    - NPCs
+    - Buildings & shops
+
+- Battle system rework
+    - Allow facing multiple enemies
+    - Perhaps allow multiple party members
+    - Hit chance
+    - Dropped items on defeat
+    - Resistance, Immunity, and Weakness attributes
+    - Bosses
+    - Revamped HUD
+
+- Items
+    - Consumables for use in battle
+    - Equipable items such as armour or weapons
+    - Accessories which provide special functions
+
+More will be added to the list eventually lol
+
+<img src="https://i.imgur.com/EQbu5gL.png" width="200"/>
