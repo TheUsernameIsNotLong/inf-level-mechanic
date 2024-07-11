@@ -1,17 +1,22 @@
 import random
 import copy
+import configparser
 from character import Character
 from status import *
+
+config = configparser.ConfigParser()
+
+config.read('config.ini')
 
 class Attack():
     def __init__(self, name:str, desc:str, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
         self.name = name
         self.desc = desc
-        self.instances = instances
-        self.power = power
-        self.hitChance = hitChance
-        self.status = status
-        self.statusChance = statusChance
+        self.instances = instances # Number of times an attack can hit
+        self.power = power # Affects damage output on each hit
+        self.hitChance = hitChance # Chance of an attack hitting
+        self.status = status # Status effect an attack can inflict
+        self.statusChance = statusChance # Chance of the status effect inflicting
     
 class Attack_Physical(Attack):
     def __init__(self, name:str, desc:str, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
@@ -20,7 +25,10 @@ class Attack_Physical(Attack):
     def calcDamage(self, attacker:Character, defender:Character):
         totalDmg = 0
         for i in range(self.instances):
-            randModifier = 0.75 + (random.random()/2)
+            if config['options']['damageVarianceEnabled'] == "true":
+                randModifier = 0.75 + (random.random()/2)
+            else:
+                randModifier = 1
             dmg = round(self.power*randModifier*((2*attacker.stats.atk) - (defender.stats.dfc))/200)
             totalDmg += dmg
             print(f"{attacker.name} attacked {defender.name} for {dmg} dmg!")
@@ -42,7 +50,10 @@ class Attack_Magical(Attack):
     def calcDamage(self, attacker:Character, defender:Character):
         totalDmg = 0
         for i in range(self.instances):
-            randModifier = 0.75 + (random.random()/2)
+            if config['options']['damageVarianceEnabled'] == "true":
+                randModifier = 0.75 + (random.random()/2)
+            else:
+                randModifier = 1
             dmg = round(self.power*randModifier*((2*attacker.stats.mAtk) - (defender.stats.mDfc))/200)
             totalDmg += dmg
             print(f"{attacker.name} attacked {defender.name} for {dmg} dmg!")
@@ -55,6 +66,7 @@ class Attack_Magical(Attack):
         if self.status is not None:
             if random.random() <= self.statusChance:
                 newInstance = copy.deepcopy(self.status)
+                # vvv Toxic spore has a chance to have double the level - I would rather implement this in a more dynamic way (should I add more with similar effects in the future) but this works for now
                 if self.name == "Toxic Spore":
                     newInstance.lvl = random.randint(1,2)
                 defender.addStatus(newInstance)
