@@ -1,4 +1,5 @@
 import configparser
+import copy
 from character import *
 from battle import *
 from attack import *
@@ -34,7 +35,7 @@ profJuggernaut = Proficiency(3,1,1,-2,1,-2)
 
 # Defining player & enemy characters
 player = Character(playerName, Stats(startLvl, profStandard), True)
-enemy = Character("Enemy", Stats(determineEnemyLvl(), profStandard), False)
+enemy = Character("Enemy", Stats(1, profStandard), False)
 
 # Granting player skills for use in battle
 player.knownSkills.append(atkDefault)
@@ -49,14 +50,18 @@ field = [enemy]
 
 # Function for determining which enemy to encounter
 def findEnemy():
-    enemy = random.choice(field)
+    enemy = copy.deepcopy(random.choice(field))
+    enemy.stats.lvl = determineEnemyLvl()
     if config['options']['modifiersEnabled'] == "true":
         decideModifiers(enemy)
+    enemy.stats.setStats()
     return enemy
 
 # Looping battle (for testing)
 while True:
-    Battle(player, findEnemy())
+    party = [player]
+    enemies = [findEnemy()]
+    Battle(party, enemies)
     enemy.stats.hp = enemy.stats.maxhp
     player.stats.hp = player.stats.maxhp
     enemy.stats.lvl = determineEnemyLvl()

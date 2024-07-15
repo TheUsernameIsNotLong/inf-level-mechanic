@@ -1,8 +1,11 @@
 import random
+import configparser
 from character import Character
 from attack import *
 
-
+# Prepare config file
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 def healthBar(char:Character):
     hp_Bars_Default = 20
@@ -13,50 +16,103 @@ def healthBar(char:Character):
     print(hp_all)
 
 class Battle:
-    def __init__(self, char1:Character, char2:Character):
-        self.char1 = char1
-        self.char2 = char2
+    def __init__(self, party:list, enemies:list):
+        self.party = party
+        self.enemies = enemies
         
         self.active = True
-        
-        self.char1.battle = self
-        self.char2.battle = self
         
         self.battleActions = ["Attack",
                               "Special",
                               "Escape"]
         
-        print(f"~ {char1.name}  VS. {char2.name} ~")
-        print(f"  LV. {char1.stats.lvl}    LV. {char2.stats.lvl}")
+        print(f"~ {party}  VS. {enemies} ~")
+        print(f"  LV. {[member.stats.lvl for member in party]}    LV. {[member.stats.lvl for member in enemies]}")
         
         self.turnNum = 0
         
         while self.active == True:
-            self.turn(char1, char2)
+            self.turn()
     
-    def turn(self, char1:Character, char2:Character):
+    def turn(self):
         self.turnNum += 1
         print(f"Turn {self.turnNum}...")
         print()
-        self.applyDamageStates(char1)
-        self.applyDamageStates(char2)
+        for member in self.party + self.enemies:
+            self.applyDamageStates(member)
         print()
-        print(f"{char2.name}")
-        print(f"HP: {char2.stats.hp}/{char2.stats.maxhp}")
-        healthBar(char2)
-        print()
-        print(f"{char1.name}")
-        print(f"HP: {char1.stats.hp}/{char1.stats.maxhp}")
-        healthBar(char1)
-        print()
-        if char1.stats.spd >= char2.stats.spd:
-            self.action(char1, char2)
-            self.action(char2, char1)
+        for member in self.party + self.enemies:
+            print(f"{member.name}")
+            print(f"HP: {member.stats.hp}/{member.stats.maxhp}")
+            healthBar(member)
+            print()
+        speedOrderedMembers = sorted(self.party+self.enemies,key=lambda member: member.stats.spd, reverse=True)
+        for member in speedOrderedMembers:
+            self.action(member)
+        for member in self.party + self.enemies:
+            self.decreaseStatusDuration(member)
+    
+    def action(self, char:Character):
+        if self.active != True:
+            return #Exit the battle
+        if char.player == True:
+            for i in range(len(self.battleActions)):
+                print(f"{i+1}. {self.battleActions[i]}")
+            while True:
+                try:
+                    choice = int(input(f"{char.name}'s turn: "))
+                    if (choice >= 1) and (choice <= len(self.battleActions)):
+                        match choice:
+                            case 1:
+                                target = self.playerChooseTarget()
+                                char.knownSkills[0].do(char, target)
+                                break
+                            case 2:
+                                target = self.playerChooseTarget()
+                                self.specialAtkMenu(char, target)
+                                break
+                            case 3:
+                                self.escape()
+                                break
+                            case _:
+                                print("You can't do that!")
+                except:
+                    print("You can't do that!")
         else:
-            self.action(char2, char1)
-            self.action(char1, char2)
-        self.decreaseStatusDuration(char1)
-        self.decreaseStatusDuration(char2)
+            target = random.choice(self.party)
+            char.knownSkills[0].do(char, target)
+    
+    def playerChooseTarget(self):
+        if len(self.enemies) > 1:
+            if config['battle']['autoTargeting'] == "true":
+                return random.choice(self.enemies)
+            else:
+                print("Available targets:")
+                for i in range(len(self.enemies)):
+                    print(f"{i+1}. {self.enemies[i].name}")
+                while True:
+                    try:
+                        choice = int(input("Which enemy: "))
+                        if (choice >= 1) and (choice <= len(self.enemies)):
+                            return self.enemies[choice-1]
+                    except:
+                        print("You can't do that!")
+        else:
+            return self.enemies[0]
+    
+    def specialAtkMenu(self, char1:Character, char2:Character):
+        if len(char1.knownSkills) >= 2:
+            print("Your skills:")
+            for i in range(len(char1.knownSkills)-1): # The character's default attack is first in the list
+                print(f"{i+1}. {char1.knownSkills[i+1].name}")
+            while True:
+                try:
+                    choice = int(input("Which special move: "))
+                    if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
+                        char1.knownSkills[choice].do(char1, char2)
+                        break
+                except:
+                    print("You can't do that!")
     
     def applyDamageStates(self, char:Character):
         groupedStates = {}
@@ -74,7 +130,7 @@ class Battle:
         for statusType, lvl in groupedStates.items():
             tempStatus = statusType(lvl=lvl)
             tempStatus.apply(char)
-    
+            
     def decreaseStatusDuration(self, char:Character):
         for status in char.activeStates[:]:
             if isinstance(status, Status_Damage) or isinstance(status, Status_State):
@@ -82,77 +138,35 @@ class Battle:
                 if status.duration < 1:
                     char.removeStatus(status)
     
-    def specialAtkMenu(self, char1:Character, char2:Character):
-        if len(char1.knownSkills) >= 2:
-            print("Your skills:")
-            for i in range(len(char1.knownSkills)-1):
-                print(f"{i+1}. {char1.knownSkills[i+1].name}")
-            while True:
-                try:
-                    choice = int(input("Which special move: "))
-                    if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
-                        char1.knownSkills[choice].do(char1, char2)
-                        break
-                except:
-                    print("You can't do that!")
+    def escape(self):
+        self.end(1)
     
-    def action(self, char1:Character, char2:Character):
-        if self.active != True:
-            return #Exit the battle
-        if char1.player == True:
-            for i in range(len(self.battleActions)):
-                print(f"{i+1}. {self.battleActions[i]}")
-            while True:
-                try:
-                    choice = int(input("Your turn: "))
-                    if (choice >= 1) and (choice <= len(self.battleActions)):
-                        match choice:
-                            case 1:
-                                char1.knownSkills[0].do(char1, char2)
-                                break
-                            case 2:
-                                self.specialAtkMenu(char1, char2)
-                                break
-                            case 3:
-                                self.escape()
-                                break
-                            case _:
-                                print("You can't do that!")
-                except:
-                    print("You can't do that!")
-        else:
-            char1.knownSkills[0].do(char1, char2)
+    def calcBattleExp(self, char:Character):
+        return round(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers)))
+
+    def calcBattleGold(self, char:Character):
+        return round(10*(char.stats.lvl**0.5) + (30 * len(char.modifiers)))
     
     def end(self, outcome:int):
         self.active = False
-        self.char1.battle = None
-        self.char2.battle = None
         if outcome == 0: # Loss
             print("Game over!")
         elif outcome == 1: # Escape
             print("You fled the battle!")
         elif outcome == 2: # Win
-            battleExp = self.calcBattleExp(self.char2)
-            battleGold = self.calcBattleGold(self.char2)
+            totalBattleExp = 0
+            totalBattleGold = 0
+            for member in self.enemies:
+                battleExp = self.calcBattleExp(member)
+                totalBattleExp += battleExp
+                battleGold = self.calcBattleGold(member)
+                totalBattleGold += battleGold
             print("Battle is over!")
             print("Rewards:")
-            print(f"Exp.\t{battleExp}")
-            print(f"Gold\t{battleGold}")
-            self.char1.stats.addExp(battleExp)
+            print(f"Exp.\t{totalBattleExp}")
+            print(f"Gold\t{totalBattleGold}")
+            memberBattleExp = (2*totalBattleExp)/len(self.party)
+            for member in self.party:
+                member.stats.addExp(memberBattleExp)
         else:
             print("The battle ended unnaturally...?")
-    
-    # def attack(self, attacker:Character, defender:Character):
-    #     randModifier = 0.75 + (random.random()/2)
-    #     damage = round(randModifier*((2*attacker.stats.atk) - (defender.stats.dfc)))
-    #     print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
-    #     defender.harm(damage)
-    
-    def escape(self):
-        self.end(1)
-    
-    def calcBattleExp(self, char:Character):
-        return round(120*(char.stats.lvl**(2/3)))
-
-    def calcBattleGold(self, char:Character):
-        return round(10*(char.stats.lvl**0.5))
