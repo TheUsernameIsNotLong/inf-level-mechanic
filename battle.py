@@ -22,9 +22,12 @@ class Battle:
         
         self.active = True
         
-        self.battleActions = ["Attack",
-                              "Special",
-                              "Escape"]
+        for member in self.party + self.enemies:
+            member.battle = self
+        
+        self.battleActions = [Act_Attack(),
+                              Act_Special(),
+                              Act_Escape()]
         
         print(f"~ {party}  VS. {enemies} ~")
         print(f"  LV. {[member.stats.lvl for member in party]}    LV. {[member.stats.lvl for member in enemies]}")
@@ -57,25 +60,14 @@ class Battle:
             return #Exit the battle
         if char.player == True:
             for i in range(len(self.battleActions)):
-                print(f"{i+1}. {self.battleActions[i]}")
+                print(f"{i+1}. {self.battleActions[i].name}")
             while True:
                 try:
                     choice = int(input(f"{char.name}'s turn: "))
                     if (choice >= 1) and (choice <= len(self.battleActions)):
-                        match choice:
-                            case 1:
-                                target = self.playerChooseTarget()
-                                char.knownSkills[0].do(char, target)
-                                break
-                            case 2:
-                                target = self.playerChooseTarget()
-                                self.specialAtkMenu(char, target)
-                                break
-                            case 3:
-                                self.escape()
-                                break
-                            case _:
-                                print("You can't do that!")
+                        target = self.playerChooseTarget()
+                        self.battleActions[choice-1].do(char, target)
+                        break
                 except:
                     print("You can't do that!")
         else:
@@ -99,20 +91,6 @@ class Battle:
                         print("You can't do that!")
         else:
             return self.enemies[0]
-    
-    def specialAtkMenu(self, char1:Character, char2:Character):
-        if len(char1.knownSkills) >= 2:
-            print("Your skills:")
-            for i in range(len(char1.knownSkills)-1): # The character's default attack is first in the list
-                print(f"{i+1}. {char1.knownSkills[i+1].name}")
-            while True:
-                try:
-                    choice = int(input("Which special move: "))
-                    if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
-                        char1.knownSkills[choice].do(char1, char2)
-                        break
-                except:
-                    print("You can't do that!")
     
     def applyDamageStates(self, char:Character):
         groupedStates = {}
@@ -170,3 +148,56 @@ class Battle:
                 member.stats.addExp(memberBattleExp)
         else:
             print("The battle ended unnaturally...?")
+        for member in self.party + self.enemies:
+            member.battle = None
+
+
+class Act:
+    
+    def __init__(self, name:str):
+        self.name = name
+        
+    def do(self):
+        pass
+
+    
+class Act_Attack(Act):
+    
+    def __init__(self):
+        super().__init__("Attack")
+    
+    def do(self, char:Character, target:Character):
+        char.knownSkills[0].do(char, target)
+
+
+class Act_Special(Act):
+    
+    def __init__(self):
+        super().__init__("Special")
+    
+    def do(self, char:Character, target:Character):
+        specialAtkMenu(char, target)
+
+
+class Act_Escape(Act):
+    
+    def __init__(self):
+        super().__init__("Escape")
+    
+    def do(self, char:Character, target:Character):
+        self.escape()
+
+
+def specialAtkMenu(char1:Character, char2:Character):
+    if len(char1.knownSkills) >= 2:
+        print("Your skills:")
+        for i in range(len(char1.knownSkills)-1): # The character's default attack is first in the list
+            print(f"{i+1}. {char1.knownSkills[i+1].name}")
+        while True:
+            try:
+                choice = int(input("Which special move: "))
+                if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
+                    char1.knownSkills[choice].do(char1, char2)
+                    break
+            except:
+                print("You can't do that!")
