@@ -25,19 +25,22 @@ class Attack_Physical(Attack):
     def calcDamage(self, attacker:Character, defender:Character):
         totalDmg = 0
         for i in range(self.instances):
-            if config['options']['damageVarianceEnabled'] == "true":
+            if config['options_game']['damageVarianceEnabled'] == "true":
                 randModifier = 0.75 + (random.random()/2)
             else:
                 randModifier = 1
             dmg = round(self.power*randModifier*((2*attacker.stats.atk) - (defender.stats.dfc))/200)
             totalDmg += dmg
-            print(f"{attacker.name} attacked {defender.name} for {dmg} dmg!")
         return totalDmg
     
     def do(self, attacker:Character, defender:Character):
-        print(f"{attacker.name} used {self.name}!")
+        battle = attacker.battle
         damage = self.calcDamage(attacker, defender)
         defender.harm(damage)
+        if battle != None:
+            scr_turn(battle.turnNum, battle.party, battle.enemies)
+        print(f"{attacker.name} used {self.name}!")
+        print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
         if self.status is not None:
             if random.random() <= self.statusChance:
                 newInstance = copy.deepcopy(self.status)
@@ -50,19 +53,22 @@ class Attack_Magical(Attack):
     def calcDamage(self, attacker:Character, defender:Character):
         totalDmg = 0
         for i in range(self.instances):
-            if config['options']['damageVarianceEnabled'] == "true":
+            if config['options_game']['damageVarianceEnabled'] == "true":
                 randModifier = 0.75 + (random.random()/2)
             else:
                 randModifier = 1
             dmg = round(self.power*randModifier*((2*attacker.stats.mAtk) - (defender.stats.mDfc))/200)
             totalDmg += dmg
-            print(f"{attacker.name} attacked {defender.name} for {dmg} dmg!")
         return totalDmg
     
     def do(self, attacker:Character, defender:Character):
-        print(f"{attacker.name} used {self.name}!")
+        battle = attacker.battle
         damage = self.calcDamage(attacker, defender)
         defender.harm(damage)
+        if battle != None:
+            scr_turn(battle.turnNum, battle.party, battle.enemies)
+        print(f"{attacker.name} used {self.name}!")
+        print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
         if self.status is not None:
             if random.random() <= self.statusChance:
                 newInstance = copy.deepcopy(self.status)

@@ -18,7 +18,7 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 50
+startLvl = 5
 
 # Deciding enemy level based on player's current level
 def determineEnemyLvl():
@@ -52,7 +52,7 @@ field = [enemy]
 def findEnemy():
     enemy = copy.deepcopy(random.choice(field))
     enemy.stats.lvl = determineEnemyLvl()
-    if config['options']['modifiersEnabled'] == "true":
+    if config['options_game']['modifiersEnabled'] == "true":
         decideModifiers(enemy)
     enemy.stats.setStats()
     return enemy
@@ -64,8 +64,7 @@ while True:
     Battle(party, enemies)
     enemy.stats.hp = enemy.stats.maxhp
     player.stats.hp = player.stats.maxhp
-    enemy.stats.lvl = determineEnemyLvl()
-    if config['options']['modifiersEnabled'] == "true":
+    if config['options_game']['modifiersEnabled'] == "true":
         enemy.modifiers.clear()
         enemy.name = "Enemy"
     enemy.stats.setStats()

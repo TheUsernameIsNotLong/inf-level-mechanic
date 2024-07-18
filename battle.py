@@ -2,21 +2,17 @@ import random
 import configparser
 from character import Character
 from attack import *
+from display import scr_turn
 
 # Prepare config file
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-def healthBar(char:Character):
-    hp_Bars_Default = 20
-    hp_Bars = hp_Bars_Default + (2*char.stats.prof.hp)
-    hp_Remaining = round(hp_Bars*char.stats.hp/char.stats.maxhp)
-    hp_Lost = hp_Bars-hp_Remaining
-    hp_all = "|" + "█" * hp_Remaining + "_" * hp_Lost + "|"
-    print(hp_all)
 
 class Battle:
+    
     def __init__(self, party:list, enemies:list):
+        
         self.party = party
         self.enemies = enemies
         
@@ -29,7 +25,7 @@ class Battle:
                               Act_Special(),
                               Act_Escape()]
         
-        print(f"~ {party}  VS. {enemies} ~")
+        print(f"~ {[member.name for member in party]}  VS. {[member.name for member in enemies]} ~")
         print(f"  LV. {[member.stats.lvl for member in party]}    LV. {[member.stats.lvl for member in enemies]}")
         
         self.turnNum = 0
@@ -39,25 +35,17 @@ class Battle:
     
     def turn(self):
         self.turnNum += 1
-        print(f"Turn {self.turnNum}...")
-        print()
         for member in self.party + self.enemies:
             self.applyDamageStates(member)
-        print()
-        for member in self.party + self.enemies:
-            print(f"{member.name}")
-            print(f"HP: {member.stats.hp}/{member.stats.maxhp}")
-            healthBar(member)
-            print()
-        speedOrderedMembers = sorted(self.party+self.enemies,key=lambda member: member.stats.spd, reverse=True)
+        speedOrderedMembers = sorted(self.party + self.enemies, key=lambda member: member.stats.spd, reverse=True)
         for member in speedOrderedMembers:
-            self.action(member)
+            if self.active == True:
+                self.action(member)
         for member in self.party + self.enemies:
             self.decreaseStatusDuration(member)
     
     def action(self, char:Character):
-        if self.active != True:
-            return #Exit the battle
+        scr_turn(self.turnNum, self.party, self.enemies)
         if char.player == True:
             for i in range(len(self.battleActions)):
                 print(f"{i+1}. {self.battleActions[i].name}")
@@ -66,17 +54,18 @@ class Battle:
                     choice = int(input(f"{char.name}'s turn: "))
                     if (choice >= 1) and (choice <= len(self.battleActions)):
                         target = self.playerChooseTarget()
-                        self.battleActions[choice-1].do(char, target)
+                        self.battleActions[choice-1].do(self, char, target)
                         break
                 except:
                     print("You can't do that!")
         else:
             target = random.choice(self.party)
             char.knownSkills[0].do(char, target)
+        input()
     
     def playerChooseTarget(self):
         if len(self.enemies) > 1:
-            if config['battle']['autoTargeting'] == "true":
+            if config['options_battle']['autoTargeting'] == "true":
                 return random.choice(self.enemies)
             else:
                 print("Available targets:")
@@ -116,8 +105,19 @@ class Battle:
                 if status.duration < 1:
                     char.removeStatus(status)
     
-    def escape(self):
-        self.end(1)
+    def specialAtkMenu(self, char1:Character, char2:Character):
+        if len(char1.knownSkills) >= 2:
+            print("Your skills:")
+            for i in range(len(char1.knownSkills)-1): # The character's default attack is first in the list
+                print(f"{i+1}. {char1.knownSkills[i+1].name}")
+            while True:
+                try:
+                    choice = int(input("Which special move: "))
+                    if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
+                        char1.knownSkills[choice].do(char1, char2)
+                        break
+                except:
+                    print("You can't do that!")
     
     def calcBattleExp(self, char:Character):
         return round(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers)))
@@ -127,6 +127,7 @@ class Battle:
     
     def end(self, outcome:int):
         self.active = False
+        scr_turn(self.turnNum, self.party, self.enemies)
         if outcome == 0: # Loss
             print("Game over!")
         elif outcome == 1: # Escape
@@ -150,6 +151,9 @@ class Battle:
             print("The battle ended unnaturally...?")
         for member in self.party + self.enemies:
             member.battle = None
+        input()
+        return
+        
 
 
 class Act:
@@ -166,7 +170,7 @@ class Act_Attack(Act):
     def __init__(self):
         super().__init__("Attack")
     
-    def do(self, char:Character, target:Character):
+    def do(self, battle:Battle, char:Character, target:Character):
         char.knownSkills[0].do(char, target)
 
 
@@ -175,8 +179,8 @@ class Act_Special(Act):
     def __init__(self):
         super().__init__("Special")
     
-    def do(self, char:Character, target:Character):
-        specialAtkMenu(char, target)
+    def do(self, battle:Battle, char:Character, target:Character):
+        battle.specialAtkMenu(char, target)
 
 
 class Act_Escape(Act):
@@ -184,20 +188,5 @@ class Act_Escape(Act):
     def __init__(self):
         super().__init__("Escape")
     
-    def do(self, char:Character, target:Character):
-        self.escape()
-
-
-def specialAtkMenu(char1:Character, char2:Character):
-    if len(char1.knownSkills) >= 2:
-        print("Your skills:")
-        for i in range(len(char1.knownSkills)-1): # The character's default attack is first in the list
-            print(f"{i+1}. {char1.knownSkills[i+1].name}")
-        while True:
-            try:
-                choice = int(input("Which special move: "))
-                if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
-                    char1.knownSkills[choice].do(char1, char2)
-                    break
-            except:
-                print("You can't do that!")
+    def do(self, battle:Battle, char:Character, target:Character):
+        battle.end(1)

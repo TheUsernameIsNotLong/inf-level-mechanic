@@ -116,17 +116,23 @@ class Character:
             self.stats.hp = self.stats.maxhp
             
     def addStatus(self, status:Status):
+        if self.battle != None:
+            scr_turn(self.battle.turnNum, self.battle.party, self.battle.enemies)
         print(f"{self.name} is inflicted with {status.name}!")
         self.activeStates.append(status) # This may replace statuses with lower duration/lvl
+        input()
         if isinstance(status, KO): # Run status effect immediately if defeated
             status.apply(self)
     
     def removeStatus(self, status:Status):
+        if self.battle != None:
+            scr_turn(self.battle.turnNum, self.battle.party, self.battle.enemies)
         try:
             self.activeStates.remove(status)
             print(f"{self.name} is no longer inflicted with {status.name}!")
         except:
             print(f"{self.name} is not inflicted with {status.name}!")
+        input()
 
     
     def applyStatus(self):

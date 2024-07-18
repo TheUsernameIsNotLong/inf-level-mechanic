@@ -1,4 +1,5 @@
 from math import floor, ceil
+from display import scr_turn
 
 class Status:
     def __init__(self, name:str, desc:str):
@@ -20,7 +21,11 @@ class Status_Damage(Status):
         self.stackable = stackable
     
     def printDamage(self, char, damage):
+        battle = char.battle
+        if battle != None:
+            scr_turn(battle.turnNum, battle.party, battle.enemies)
         print(f"{char.name} took {damage} {self.name} damage!")
+        input()
         
 class Status_State(Status):
     def __init__(self, name:str, desc:str, duration:int):
