@@ -25,14 +25,6 @@ def determineEnemyLvl():
     pLvl = player.stats.lvl
     return random.randint(round(pLvl-(pLvl**0.5)), round(pLvl+(pLvl**0.5)))
 
-# Proficiency sets (mostly for testing)
-profStandard = Proficiency(0,0,0,0,0,0)
-profOP = Proficiency(3,3,3,3,3,3)
-profWK = Proficiency(-3,-3,-3,-3,-3,-3)
-
-profTank = Proficiency(1,-1,3,-2,2,-3)
-profJuggernaut = Proficiency(3,1,1,-2,1,-2)
-
 # Defining player & enemy characters
 player = Character(playerName, Stats(startLvl, profStandard), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
