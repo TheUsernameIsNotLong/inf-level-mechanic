@@ -52,8 +52,8 @@ class Poison(Status_Damage):
         
     def apply(self, char):
         damage = floor(char.stats.hp*(1-(1-0.05)**self.lvl))
-        self.printDamage(char, damage)
         char.harm(damage)
+        self.printDamage(char, damage)
 
 class Burn(Status_Damage):
     def __init__(self, lvl:float=1):
@@ -62,8 +62,8 @@ class Burn(Status_Damage):
         
     def apply(self, char):
         damage = floor(char.stats.maxhp*0.08)
-        self.printDamage(char, damage)
         char.harm(damage)
+        self.printDamage(char, damage)
 
 class Radiation(Status_Damage):
     def __init__(self, lvl:float=1):
@@ -71,8 +71,8 @@ class Radiation(Status_Damage):
         
     def apply(self, char):
         damage = floor(self.lvl * 0.125 * char.stats.hp)
-        self.printDamage(char, damage)
         char.harm(damage)
+        self.printDamage(char, damage)
         self.lvl /= 2
 
 class Paralysis(Status_State):
@@ -95,7 +95,3 @@ class Lock(Status_State):
         
     def apply(self, char):
         print("Locked!")
-
-def effectPoison(self, char):
-        char.harm(floor(1-(1-char.stats.hp*0.05)**self.lvl))
-

@@ -18,7 +18,7 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 5
+startLvl = 50
 
 # Deciding enemy level based on player's current level
 def determineEnemyLvl():

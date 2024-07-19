@@ -96,6 +96,8 @@ class Battle:
         for statusType, lvl in groupedStates.items():
             tempStatus = statusType(lvl=lvl)
             tempStatus.apply(char)
+            if char.stats.hp == 0:
+                char.addStatus(KO())
             
     def decreaseStatusDuration(self, char:Character):
         for status in char.activeStates[:]:

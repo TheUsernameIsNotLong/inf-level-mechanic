@@ -128,12 +128,14 @@ class Character:
             scr_turn(self.battle.turnNum, self.battle.party, self.battle.enemies)
         try:
             self.activeStates.remove(status)
-            if not isinstance(status, KO):
+            if not (self.checkStatus(status) or isinstance(status, KO)):
                 print(f"{self.name} is no longer inflicted with {status.name}!")
         except:
             print(f"{self.name} is not inflicted with {status.name}!")
         input()
 
+    def checkStatus(self, status:Status):
+        return any(isinstance(instance, type(status)) for instance in self.activeStates)
     
     def applyStatus(self):
         for s in self.activeStates:
