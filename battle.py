@@ -61,7 +61,6 @@ class Battle:
         else:
             target = random.choice(self.party)
             char.knownSkills[0].do(char, target)
-        input()
     
     def playerChooseTarget(self):
         if len(self.enemies) > 1:
@@ -151,7 +150,6 @@ class Battle:
             print("The battle ended unnaturally...?")
         for member in self.party + self.enemies:
             member.battle = None
-        input()
         return
         
 

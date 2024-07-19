@@ -41,7 +41,10 @@ class Attack_Physical(Attack):
             scr_turn(battle.turnNum, battle.party, battle.enemies)
         print(f"{attacker.name} used {self.name}!")
         print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
-        if self.status is not None:
+        input()
+        if defender.stats.hp == 0:
+            defender.addStatus(KO())
+        elif self.status is not None:
             if random.random() <= self.statusChance:
                 newInstance = copy.deepcopy(self.status)
                 defender.addStatus(newInstance)
@@ -69,7 +72,10 @@ class Attack_Magical(Attack):
             scr_turn(battle.turnNum, battle.party, battle.enemies)
         print(f"{attacker.name} used {self.name}!")
         print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
-        if self.status is not None:
+        input()
+        if defender.stats.hp == 0:
+            defender.addStatus(KO())
+        elif self.status is not None:
             if random.random() <= self.statusChance:
                 newInstance = copy.deepcopy(self.status)
                 # vvv Toxic spore has a chance to have double the level - I would rather implement this in a more dynamic way (should I add more with similar effects in the future) but this works for now

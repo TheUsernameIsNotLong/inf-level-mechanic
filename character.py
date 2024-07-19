@@ -108,7 +108,6 @@ class Character:
         self.stats.hp -= hp
         if self.stats.hp <= 0:
             self.stats.hp = 0 # Do not allow negative health
-            self.addStatus(KO())
     
     def heal(self, hp):
         self.stats.hp += hp
@@ -129,7 +128,8 @@ class Character:
             scr_turn(self.battle.turnNum, self.battle.party, self.battle.enemies)
         try:
             self.activeStates.remove(status)
-            print(f"{self.name} is no longer inflicted with {status.name}!")
+            if not isinstance(status, KO):
+                print(f"{self.name} is no longer inflicted with {status.name}!")
         except:
             print(f"{self.name} is not inflicted with {status.name}!")
         input()
