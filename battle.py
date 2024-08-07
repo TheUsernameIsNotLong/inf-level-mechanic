@@ -3,6 +3,7 @@ import configparser
 from character import Character
 from attack import *
 from display import scr_turn
+from mechanics import playerChoice
 
 # Prepare config file
 config = configparser.ConfigParser()
@@ -47,17 +48,8 @@ class Battle:
     def action(self, char:Character):
         scr_turn(self.turnNum, self.party, self.enemies)
         if char.player == True:
-            for i in range(len(self.battleActions)):
-                print(f"{i+1}. {self.battleActions[i].name}")
-            while True:
-                try:
-                    choice = int(input(f"{char.name}'s turn: "))
-                    if (choice >= 1) and (choice <= len(self.battleActions)):
-                        target = self.playerChooseTarget()
-                        self.battleActions[choice-1].do(self, char, target)
-                        break
-                except:
-                    print("You can't do that!")
+            choice = playerChoice([action.name for action in self.battleActions], entry=f"{char.name}'s turn: ")
+            self.battleActions[choice].do(self, char, self.playerChooseTarget())
         else:
             target = random.choice(self.party)
             char.knownSkills[0].do(char, target)
@@ -68,15 +60,8 @@ class Battle:
                 return random.choice(self.enemies)
             else:
                 print("Available targets:")
-                for i in range(len(self.enemies)):
-                    print(f"{i+1}. {self.enemies[i].name}")
-                while True:
-                    try:
-                        choice = int(input("Which enemy: "))
-                        if (choice >= 1) and (choice <= len(self.enemies)):
-                            return self.enemies[choice-1]
-                    except:
-                        print("You can't do that!")
+                choice = playerChoice([enemy.name for enemy in self.enemies], entry="Which enemy: ")
+                return self.enemies[choice]
         else:
             return self.enemies[0]
     
@@ -109,16 +94,8 @@ class Battle:
     def specialAtkMenu(self, char1:Character, char2:Character):
         if len(char1.knownSkills) >= 2:
             print("Your skills:")
-            for i in range(len(char1.knownSkills)-1): # The character's default attack is first in the list
-                print(f"{i+1}. {char1.knownSkills[i+1].name}")
-            while True:
-                try:
-                    choice = int(input("Which special move: "))
-                    if (choice >= 1) and (choice <= len(char1.knownSkills)-1):
-                        char1.knownSkills[choice].do(char1, char2)
-                        break
-                except:
-                    print("You can't do that!")
+            choice = playerChoice([skill.name for skill in char1.knownSkills[1:]], entry="Which special move: ")
+            char1.knownSkills[choice+1].do(char1, char2)
     
     def calcBattleExp(self, char:Character):
         return round(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers)))
