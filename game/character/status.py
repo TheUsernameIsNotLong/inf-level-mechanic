@@ -1,5 +1,5 @@
 from math import floor, ceil
-from display import scr_turn
+from game.core.display import scr_turn
 
 class Status:
     def __init__(self, name:str, desc:str):

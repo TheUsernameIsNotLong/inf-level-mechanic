@@ -1,4 +1,4 @@
-from character import Character
+from game.character.character import Character
 from math import ceil
 import random
 

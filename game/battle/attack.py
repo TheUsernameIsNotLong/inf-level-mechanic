@@ -1,8 +1,8 @@
 import random
 import copy
 import configparser
-from character import Character
-from status import *
+from game.character.character import Character
+from game.character.status import *
 
 config = configparser.ConfigParser()
 

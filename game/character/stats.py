@@ -1,5 +1,5 @@
 import math
-from proficiency import *
+from .proficiency import *
 
 class Stats:
     

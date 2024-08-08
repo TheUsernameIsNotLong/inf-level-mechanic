@@ -1,6 +1,5 @@
-from status import *
-from proficiency import *
-from stats import *
+from .status import *
+from .stats import *
 
 class Character:
 

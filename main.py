@@ -1,9 +1,9 @@
 import configparser
 import copy
-from character import *
-from battle import *
-from attack import *
-from modifier import *
+from game.character.character import *
+from game.battle.battle import *
+from game.battle.attack import *
+from game.character.modifier import *
 
 # Prepare config file
 config = configparser.ConfigParser()

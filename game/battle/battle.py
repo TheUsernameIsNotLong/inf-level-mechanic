@@ -1,9 +1,9 @@
 import random
 import configparser
-from character import Character
-from attack import *
-from display import scr_turn
-from mechanics import playerChoice
+from game.character.character import Character
+from .attack import *
+from game.core.display import scr_turn
+from game.core.mechanics import playerChoice
 
 # Prepare config file
 config = configparser.ConfigParser()
