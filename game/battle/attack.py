@@ -9,9 +9,11 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 class Attack():
-    def __init__(self, name:str, desc:str, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
+    
+    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
         self.name = name
         self.desc = desc
+        self.mpCost = mpCost
         self.instances = instances # Number of times an attack can hit
         self.power = power # Affects damage output on each hit
         self.hitChance = hitChance # Chance of an attack hitting
@@ -19,8 +21,9 @@ class Attack():
         self.statusChance = statusChance # Chance of the status effect inflicting
     
 class Attack_Physical(Attack):
-    def __init__(self, name:str, desc:str, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
-        super().__init__(name, desc, instances, power, hitChance, status, statusChance)
+    
+    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
+        super().__init__(name, desc, mpCost, instances, power, hitChance, status, statusChance)
     
     def calcDamage(self, attacker:Character, defender:Character):
         totalDmg = 0
@@ -34,6 +37,7 @@ class Attack_Physical(Attack):
         return totalDmg
     
     def do(self, attacker:Character, defender:Character):
+        attacker.stats.mp -= self.mpCost
         battle = attacker.battle
         damage = self.calcDamage(attacker, defender)
         defender.harm(damage)
@@ -50,8 +54,9 @@ class Attack_Physical(Attack):
                 defender.addStatus(newInstance)
 
 class Attack_Magical(Attack):
-    def __init__(self, name:str, desc:str, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
-        super().__init__(name, desc, instances, power, hitChance, status, statusChance)
+    
+    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
+        super().__init__(name, desc, mpCost, instances, power, hitChance, status, statusChance)
     
     def calcDamage(self, attacker:Character, defender:Character):
         totalDmg = 0
@@ -65,6 +70,7 @@ class Attack_Magical(Attack):
         return totalDmg
     
     def do(self, attacker:Character, defender:Character):
+        attacker.stats.mp -= self.mpCost
         battle = attacker.battle
         damage = self.calcDamage(attacker, defender)
         defender.harm(damage)
@@ -83,8 +89,8 @@ class Attack_Magical(Attack):
                     newInstance.lvl = random.randint(1,2)
                 defender.addStatus(newInstance)
 
-atkDefault = Attack_Physical("Attack", "Perform a weak attack.", 1, 100, 1, None, 0)
-atkPsnSlash = Attack_Physical("Poison Slash", "Slash the opponent with a toxic blade. Chance to poison.", 1, 100, 1, Poison(), 0.5)
-atkToxSpore = Attack_Magical("Toxic Spore", "Shoot a toxic spore, inflicting poison. Chance to double poison strength.", 1, 0, 1, Poison(), 1)
-atkBurnBlade = Attack_Physical("Burning Blade", "Perform a flaming double-slash upon the opponent. Chance to burn.", 2, 60, 1, Burn(), 0.5)
-atkFlamethrower = Attack_Magical("Flamethrower", "Spur endless flames towards the oppenent!", 10, 16, 1, Burn(2), 1)
+atkDefault = Attack_Physical("Attack", "Perform a weak attack.", 0, 1, 100, 1, None, 0)
+atkPsnSlash = Attack_Physical("Poison Slash", "Slash the opponent with a toxic blade. Chance to poison.", 12, 1, 100, 1, Poison(), 0.5)
+atkToxSpore = Attack_Magical("Toxic Spore", "Shoot a toxic spore, inflicting poison. Chance to double poison strength.", 22, 1, 0, 1, Poison(), 1)
+atkBurnBlade = Attack_Physical("Burning Blade", "Perform a flaming double-slash upon the opponent. Chance to burn.", 18, 2, 60, 1, Burn(), 0.5)
+atkFlamethrower = Attack_Magical("Flamethrower", "Spur endless flames towards the oppenent!", 32, 10, 16, 1, Burn(2), 1)

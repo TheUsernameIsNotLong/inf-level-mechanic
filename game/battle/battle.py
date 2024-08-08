@@ -93,9 +93,15 @@ class Battle:
     
     def specialAtkMenu(self, char1:Character, char2:Character):
         if len(char1.knownSkills) >= 2:
-            print("Your skills:")
-            choice = playerChoice([skill.name for skill in char1.knownSkills[1:]], entry="Which special move: ")
-            char1.knownSkills[choice+1].do(char1, char2)
+            while True:
+                print("Your skills:")
+                choice = playerChoice([skill.name for skill in char1.knownSkills[1:]], entry="Which special move: ")
+                if char1.knownSkills[choice+1].mpCost <= char1.stats.mp:
+                    char1.knownSkills[choice+1].do(char1, char2)
+                    break
+                else:
+                    print(f"{char1.name} does not have enough MP!")
+                    input()
     
     def calcBattleExp(self, char:Character):
         return round(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers)))
@@ -148,7 +154,13 @@ class Act_Attack(Act):
         super().__init__("Attack")
     
     def do(self, battle:Battle, char:Character, target:Character):
-        char.knownSkills[0].do(char, target)
+        while True:
+            if char.knownSkills[0].mpCost <= char.stats.mp:
+                char.knownSkills[0].do(char, target)
+                break
+            else:
+                print(f"{char.name} does not have enough MP!")
+                input()
 
 
 class Act_Special(Act):

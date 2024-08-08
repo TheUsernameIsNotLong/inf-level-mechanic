@@ -9,6 +9,8 @@ class Stats:
         self.exp = 0
         self.maxhp = 0
         self.hp = 0
+        self.maxmp = 0
+        self.mp = 0
         self.atk = 0
         self.dfc = 0
         self.mAtk = 0
@@ -28,6 +30,10 @@ class Stats:
     def calc_hp(self, lvl):
         pValue = (20+self.prof.hp)/20
         return round((75 + ((lvl**3 * 5)**0.5))**pValue)
+    
+    def calc_mp(self, lvl):
+        pValue = (20+self.prof.mp)/20
+        return round((2*lvl)**pValue)
 
     def calc_atk(self, lvl):
         pValue = (20+self.prof.atk)/20
@@ -44,6 +50,8 @@ class Stats:
     def setStats(self):
         self.maxhp = self.calc_hp(self.lvl)
         self.hp = self.maxhp
+        self.maxmp = self.calc_mp(self.lvl)
+        self.mp = self.maxmp
         self.atk = self.calc_atk(self.lvl)
         self.dfc = self.calc_dfc(self.lvl)
         self.mAtk = self.calc_atk(self.lvl)

@@ -1,5 +1,6 @@
 import configparser
 import copy
+import json
 from game.character.character import *
 from game.battle.battle import *
 from game.battle.attack import *
@@ -28,6 +29,8 @@ def determineEnemyLvl():
 # Defining player & enemy characters
 player = Character(playerName, Stats(startLvl, profStandard), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
+
+
 
 # Granting player skills for use in battle
 player.knownSkills.append(atkDefault)

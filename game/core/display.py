@@ -7,12 +7,19 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 hp_Bars = 20
+mp_Bars = 20
+
+def statBar(char, stat_Bars:int):
+    stat_Remaining = round(stat_Bars*char.stats.hp/char.stats.maxhp)
+    stat_Lost = stat_Bars-stat_Remaining
+    stat_all = "|" + "█" * stat_Remaining + "_" * stat_Lost + "|"
+    return stat_all
 
 def healthBar(char):
-    hp_Remaining = round(hp_Bars*char.stats.hp/char.stats.maxhp)
-    hp_Lost = hp_Bars-hp_Remaining
-    hp_all = "|" + "█" * hp_Remaining + "_" * hp_Lost + "|"
-    return hp_all
+    return statBar(char, hp_Bars)
+
+def manaBar(char):
+    return statBar(char, mp_Bars)
 
 def numAbbrev(num:float):
     suffix = ["", "K", "M", "B", "T", "Qd", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]
@@ -23,12 +30,18 @@ def numAbbrev(num:float):
     newNum = f"{newNum:.4g}"
     return f"{newNum}{suffix[size]}"
 
-def scr_playerHpLabel(member):
-    hp = str(numAbbrev(member.stats.hp))
-    maxhp = str(numAbbrev(member.stats.maxhp))
-    paddingAmount = (hp_Bars+2) - (len(hp)+len(maxhp)+3) # +3 for " / "
+def scr_playerStatLabel(member, current, max):
+    numCurrent = str(numAbbrev(current))
+    numMax = str(numAbbrev(max))
+    paddingAmount = (hp_Bars+2) - (len(numCurrent)+len(numMax)+3) # +3 for " / "
     spaces = " " * paddingAmount
-    return f"{spaces}{hp} / {maxhp}"
+    return f"{spaces}{numCurrent} / {numMax}"
+
+def scr_playerHpLabel(member):
+    return scr_playerStatLabel(member, member.stats.hp, member.stats.maxhp)
+
+def scr_playerMpLabel(member):
+    return scr_playerStatLabel(member, member.stats.mp, member.stats.maxmp)
 
 def scr_memberName(member):
     maxNameLen = (hp_Bars+3) - 11 # +2 for each end of the HP bar, +1 for allowing at least 1 space between name and lvl, -10 for maximum abbreviated lvl length
@@ -49,11 +62,12 @@ def scr_turn(turnNum:int, party:list, enemies:list):
     for member in party:
         print(f"      {scr_memberName(member)}")
         print(f"      {healthBar(member)}")
-        print(f"      {scr_playerHpLabel(member)}")
+        print(f"   {scr_playerHpLabel(member)} HP")
+        print(f"   {scr_playerMpLabel(member)} MP")
         print()
     for member in enemies:
         print(f"{scr_memberName(member)}")
         print(f"{healthBar(member)}")
-        print(f"{numAbbrev(member.stats.hp)} / {numAbbrev(member.stats.maxhp)}")
+        print(f"{numAbbrev(member.stats.hp)} / {numAbbrev(member.stats.maxhp)} HP")
         print()
     print("----------------------------")

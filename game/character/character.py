@@ -59,6 +59,7 @@ class Character:
         print(f"LVL:\t{self.stats.lvl}")
         print(f"EXP:\t{self.stats.exp}/{self.stats.calc_expGoal(self.stats.lvl)}")
         print(f"HP:\t{self.stats.hp}")
+        print(f"MP:\t{self.stats.mp}")
         print(f"ATK:\t{self.stats.atk}")
         print(f"DFC:\t{self.stats.dfc}")
         print(f"M.ATK:\t{self.stats.mAtk}")
