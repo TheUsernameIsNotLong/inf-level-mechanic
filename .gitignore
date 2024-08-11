@@ -1,5 +1,2 @@
-/__pycache__/
+**/__pycache__/
 /.vscode/
-/game/battle/__pycache__/
-/game/character/__pycache__/
-/game/core/__pycache__/
