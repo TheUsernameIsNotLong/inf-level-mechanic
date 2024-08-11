@@ -27,7 +27,7 @@ def determineEnemyLvl():
     return random.randint(round(pLvl-(pLvl**0.5)), round(pLvl+(pLvl**0.5)))
 
 # Defining player & enemy characters
-player = Character(playerName, Stats(startLvl, profStandard), True)
+player = Character(playerName, Stats(startLvl, profOP), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
 
 

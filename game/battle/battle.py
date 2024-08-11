@@ -107,8 +107,9 @@ class Battle:
         elif outcome == 2: # Win
             totalBattleExp = 0
             totalBattleGold = 0
+            scalingMult = expScalingModifier(self.party, self.enemies)
             for member in self.enemies:
-                battleExp = calcBattleExp(member)
+                battleExp = calcBattleExp(member, scalingMult)
                 totalBattleExp += battleExp
                 battleGold = calcBattleGold(member)
                 totalBattleGold += battleGold
@@ -165,8 +166,18 @@ battleActions = [Act_Attack(),
                 Act_Special(),
                 Act_Escape()]
 
-def calcBattleExp(char:Character):
-    return round(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers)))
+def expScalingModifier(party:list, enemies:list):
+    if config['options_game']['experienceScalingEnabled'] == "true":
+        enemiesLvlSum = sum(member.stats.lvl for member in enemies)
+        partyLvlSum = sum(member.stats.lvl for member in party)
+        levelRatio = 10*((enemiesLvlSum/partyLvlSum) - 1)
+    else:
+        levelRatio = 0
+    scalingPower = float(config['options_game']['experienceScalingPower'])
+    return 2**(levelRatio*scalingPower)
+
+def calcBattleExp(char:Character, scalingMult):
+    return round(scalingMult*(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers))))
 
 def calcBattleGold(char:Character):
     return round(10*(char.stats.lvl**0.5) + (30 * len(char.modifiers)))
