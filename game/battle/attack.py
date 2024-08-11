@@ -20,6 +20,14 @@ class Attack():
         self.status = status # Status effect an attack can inflict
         self.statusChance = statusChance # Chance of the status effect inflicting
     
+    def checkValid(self, attacker:Character, defender:Character):
+        if (self.mpCost <= attacker.stats.mp) and (defender.stats.hp > 0):
+            attacker.battle.pendingAction = False
+            return True
+        else:
+            print(f"{attacker.name} does not have the required MP!")
+            return False
+    
 class Attack_Physical(Attack):
     
     def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
@@ -37,21 +45,21 @@ class Attack_Physical(Attack):
         return totalDmg
     
     def do(self, attacker:Character, defender:Character):
-        attacker.stats.mp -= self.mpCost
-        battle = attacker.battle
-        damage = self.calcDamage(attacker, defender)
-        defender.harm(damage)
-        if battle != None:
-            scr_turn(battle.turnNum, battle.party, battle.enemies)
-        print(f"{attacker.name} used {self.name}!")
-        print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
-        input()
-        if defender.stats.hp == 0:
-            defender.addStatus(KO())
-        elif self.status is not None:
-            if random.random() <= self.statusChance:
-                newInstance = copy.deepcopy(self.status)
-                defender.addStatus(newInstance)
+        if self.checkValid(attacker, defender):
+            attacker.stats.mp -= self.mpCost
+            battle = attacker.battle
+            damage = self.calcDamage(attacker, defender)
+            defender.harm(damage)
+            if battle != None:
+                scr_turn(battle.turnNum, battle.party, battle.enemies)
+            print(f"{attacker.name} used {self.name}!")
+            print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
+            input()
+            defender.checkDead()
+            if self.status is not None:
+                if random.random() <= self.statusChance:
+                    newInstance = copy.deepcopy(self.status)
+                    defender.addStatus(newInstance)
 
 class Attack_Magical(Attack):
     
@@ -70,24 +78,24 @@ class Attack_Magical(Attack):
         return totalDmg
     
     def do(self, attacker:Character, defender:Character):
-        attacker.stats.mp -= self.mpCost
-        battle = attacker.battle
-        damage = self.calcDamage(attacker, defender)
-        defender.harm(damage)
-        if battle != None:
-            scr_turn(battle.turnNum, battle.party, battle.enemies)
-        print(f"{attacker.name} used {self.name}!")
-        print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
-        input()
-        if defender.stats.hp == 0:
-            defender.addStatus(KO())
-        elif self.status is not None:
-            if random.random() <= self.statusChance:
-                newInstance = copy.deepcopy(self.status)
-                # vvv Toxic spore has a chance to have double the level - I would rather implement this in a more dynamic way (should I add more with similar effects in the future) but this works for now
-                if self.name == "Toxic Spore":
-                    newInstance.lvl = random.randint(1,2)
-                defender.addStatus(newInstance)
+        if self.checkValid(attacker, defender):
+            attacker.stats.mp -= self.mpCost
+            battle = attacker.battle
+            damage = self.calcDamage(attacker, defender)
+            defender.harm(damage)
+            if battle != None:
+                scr_turn(battle.turnNum, battle.party, battle.enemies)
+            print(f"{attacker.name} used {self.name}!")
+            print(f"{attacker.name} attacked {defender.name} for {damage} dmg!")
+            input()
+            defender.checkDead()
+            if self.status is not None:
+                if random.random() <= self.statusChance:
+                    newInstance = copy.deepcopy(self.status)
+                    # vvv Toxic spore has a chance to have double the level - I would rather implement this in a more dynamic way (should I add more with similar effects in the future) but this works for now
+                    if self.name == "Toxic Spore":
+                        newInstance.lvl = random.randint(1,2)
+                    defender.addStatus(newInstance)
 
 atkDefault = Attack_Physical("Attack", "Perform a weak attack.", 0, 1, 100, 1, None, 0)
 atkPsnSlash = Attack_Physical("Poison Slash", "Slash the opponent with a toxic blade. Chance to poison.", 12, 1, 100, 1, Poison(), 0.5)

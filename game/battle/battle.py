@@ -9,7 +9,6 @@ from game.core.mechanics import playerChoice
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-
 class Battle:
     
     def __init__(self, party:list, enemies:list):
@@ -19,19 +18,17 @@ class Battle:
         
         self.active = True
         
+        self.pendingAction = False
+        
         for member in self.party + self.enemies:
             member.battle = self
-        
-        self.battleActions = [Act_Attack(),
-                              Act_Special(),
-                              Act_Escape()]
         
         print(f"~ {[member.name for member in party]}  VS. {[member.name for member in enemies]} ~")
         print(f"  LV. {[member.stats.lvl for member in party]}    LV. {[member.stats.lvl for member in enemies]}")
         
         self.turnNum = 0
         
-        while self.active == True:
+        while self.active:
             self.turn()
     
     def turn(self):
@@ -46,13 +43,15 @@ class Battle:
             self.decreaseStatusDuration(member)
     
     def action(self, char:Character):
-        scr_turn(self.turnNum, self.party, self.enemies)
-        if char.player == True:
-            choice = playerChoice([action.name for action in self.battleActions], entry=f"{char.name}'s turn: ")
-            self.battleActions[choice].do(self, char, self.playerChooseTarget())
-        else:
-            target = random.choice(self.party)
-            char.knownSkills[0].do(char, target)
+        self.pendingAction = True
+        while self.pendingAction:
+            scr_turn(self.turnNum, self.party, self.enemies)
+            if char.player == True:
+                choice = playerChoice([action.name for action in battleActions], entry=f"{char.name}'s turn: ")
+                battleActions[choice].do(self, char, self.playerChooseTarget())
+            else:
+                target = random.choice(self.party)
+                char.knownSkills[0].do(char, target)
     
     def playerChooseTarget(self):
         if len(self.enemies) > 1:
@@ -81,8 +80,7 @@ class Battle:
         for statusType, lvl in groupedStates.items():
             tempStatus = statusType(lvl=lvl)
             tempStatus.apply(char)
-            if char.stats.hp == 0:
-                char.addStatus(KO())
+            char.checkDead()
             
     def decreaseStatusDuration(self, char:Character):
         for status in char.activeStates[:]:
@@ -93,21 +91,11 @@ class Battle:
     
     def specialAtkMenu(self, char1:Character, char2:Character):
         if len(char1.knownSkills) >= 2:
-            while True:
-                print("Your skills:")
-                choice = playerChoice([skill.name for skill in char1.knownSkills[1:]], entry="Which special move: ")
-                if char1.knownSkills[choice+1].mpCost <= char1.stats.mp:
-                    char1.knownSkills[choice+1].do(char1, char2)
-                    break
-                else:
-                    print(f"{char1.name} does not have enough MP!")
-                    input()
-    
-    def calcBattleExp(self, char:Character):
-        return round(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers)))
-
-    def calcBattleGold(self, char:Character):
-        return round(10*(char.stats.lvl**0.5) + (30 * len(char.modifiers)))
+            print("Your skills:")
+            skillList = ["<-- BACK"]+[skill.name for skill in char1.knownSkills[1:]]
+            choice = playerChoice(skillList, entry="Which special move: ")
+            if choice >= 1:
+                char1.knownSkills[choice].do(char1, char2)
     
     def end(self, outcome:int):
         self.active = False
@@ -120,9 +108,9 @@ class Battle:
             totalBattleExp = 0
             totalBattleGold = 0
             for member in self.enemies:
-                battleExp = self.calcBattleExp(member)
+                battleExp = calcBattleExp(member)
                 totalBattleExp += battleExp
-                battleGold = self.calcBattleGold(member)
+                battleGold = calcBattleGold(member)
                 totalBattleGold += battleGold
             print("Battle is over!")
             print("Rewards:")
@@ -154,14 +142,7 @@ class Act_Attack(Act):
         super().__init__("Attack")
     
     def do(self, battle:Battle, char:Character, target:Character):
-        while True:
-            if char.knownSkills[0].mpCost <= char.stats.mp:
-                char.knownSkills[0].do(char, target)
-                break
-            else:
-                print(f"{char.name} does not have enough MP!")
-                input()
-
+        char.knownSkills[0].do(char, target)
 
 class Act_Special(Act):
     
@@ -179,3 +160,13 @@ class Act_Escape(Act):
     
     def do(self, battle:Battle, char:Character, target:Character):
         battle.end(1)
+
+battleActions = [Act_Attack(),
+                Act_Special(),
+                Act_Escape()]
+
+def calcBattleExp(char:Character):
+    return round(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers)))
+
+def calcBattleGold(char:Character):
+    return round(10*(char.stats.lvl**0.5) + (30 * len(char.modifiers)))

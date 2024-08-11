@@ -25,6 +25,10 @@ class Character:
         if self.stats.hp > self.stats.maxhp:
             self.stats.hp = self.stats.maxhp
             
+    def checkDead(self):
+        if self.stats.hp == 0:
+            self.addStatus(KO())
+            
     def addStatus(self, status:Status):
         if self.battle != None:
             scr_turn(self.battle.turnNum, self.battle.party, self.battle.enemies)
