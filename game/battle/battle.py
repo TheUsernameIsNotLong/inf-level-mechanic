@@ -92,7 +92,7 @@ class Battle:
     def specialAtkMenu(self, char1:Character, char2:Character):
         if len(char1.knownSkills) >= 2:
             print("Your skills:")
-            skillList = ["<-- BACK"]+[skill.name for skill in char1.knownSkills[1:]]
+            skillList = ["<-- BACK"]+[f"{skill.name}  [{skill.mpCost} MP]" for skill in char1.knownSkills[1:]]
             choice = playerChoice(skillList, entry="Which special move: ")
             if choice >= 1:
                 char1.knownSkills[choice].do(char1, char2)

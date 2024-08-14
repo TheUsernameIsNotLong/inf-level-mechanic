@@ -26,6 +26,7 @@ class Attack():
             return True
         else:
             print(f"{attacker.name} does not have the required MP!")
+            input()
             return False
     
 class Attack_Physical(Attack):
