@@ -26,9 +26,13 @@ def numAbbrev(num:float):
     if num < 1000:
         return num
     size = int(math.log10(num) // 3)
-    newNum = num / (10 ** (3 * size))
-    newNum = f"{newNum:.4g}"
-    return f"{newNum}{suffix[size]}"
+    if size <= len(suffix):
+        newNum = num / (10 ** (3 * size))
+        newNum = f"{newNum:.3g}"
+        return f"{newNum}{suffix[size]}"
+    else:
+        newNum = f"{num / (10 ** math.log10(num)):.1f}"
+        return f"{newNum}e{round(math.log10(num))}"
 
 def scr_playerStatLabel(member, current, max):
     numCurrent = str(numAbbrev(current))

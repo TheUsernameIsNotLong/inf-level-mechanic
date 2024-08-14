@@ -19,7 +19,7 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 50
+startLvl = 5
 
 # Deciding enemy level based on player's current level
 def determineEnemyLvl():
@@ -27,7 +27,7 @@ def determineEnemyLvl():
     return random.randint(round(pLvl-(pLvl**0.5)), round(pLvl+(pLvl**0.5)))
 
 # Defining player & enemy characters
-player = Character(playerName, Stats(startLvl, profOP), True)
+player = Character(playerName, Stats(startLvl, profStandard), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
 
 
