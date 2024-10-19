@@ -1,6 +1,6 @@
 import configparser
 import copy
-import json
+import game.core.data as data
 from game.character.character import *
 from game.battle.battle import *
 from game.battle.attack import *
@@ -19,7 +19,7 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 5
+startLvl = 50
 
 # Deciding enemy level based on player's current level
 def determineEnemyLvl():
@@ -30,8 +30,6 @@ def determineEnemyLvl():
 player = Character(playerName, Stats(startLvl, profStandard), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
 
-
-
 # Granting player skills for use in battle
 player.knownSkills.append(atkDefault)
 player.knownSkills.append(atkPsnSlash)
@@ -39,6 +37,8 @@ player.knownSkills.append(atkToxSpore)
 player.knownSkills.append(atkBurnBlade)
 player.knownSkills.append(atkFlamethrower)
 enemy.knownSkills.append(atkDefault)
+
+data.party.append(player)
 
 # List of all possible encounters, this would be dependent on the player's level and area on the map, should there eventually be one
 field = [enemy]
@@ -54,11 +54,11 @@ def findEnemy():
 
 # Looping battle (for testing)
 while True:
-    party = [player]
+    party = data.party
     enemies = [findEnemy()]
     Battle(party, enemies)
-    enemy.stats.hp = enemy.stats.maxhp
-    player.stats.hp = player.stats.maxhp
+    for member in party+enemies:
+        member.stats.hp = member.stats.maxhp
     if config['options_game']['modifiersEnabled'] == "true":
         enemy.modifiers.clear()
         enemy.name = "Enemy"

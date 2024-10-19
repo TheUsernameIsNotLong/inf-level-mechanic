@@ -1,0 +1,75 @@
+{
+    "party": [
+        {
+            "name": "mike",
+            "lvl": 50,
+            "proficiency": {
+                "hp": 0,
+                "mp": 0,
+                "atk": 0,
+                "dfc": 0,
+                "mAtk": 0,
+                "mDfc": 0,
+                "spd": 0
+            },
+            "knownSkills": [
+                {
+                    "type": 0,
+                    "name": "Attack",
+                    "desc": "Perform a weak attack.",
+                    "mpCost": 0,
+                    "instances": 1,
+                    "power": 100,
+                    "hitChance": 1,
+                    "status": null,
+                    "statusChance": 0
+                },
+                {
+                    "type": 0,
+                    "name": "Poison Slash",
+                    "desc": "Slash the opponent with a toxic blade. Chance to poison.",
+                    "mpCost": 12,
+                    "instances": 1,
+                    "power": 100,
+                    "hitChance": 1,
+                    "status": "PSN",
+                    "statusChance": 0.5
+                },
+                {
+                    "type": 1,
+                    "name": "Toxic Spore",
+                    "desc": "Shoot a toxic spore, inflicting poison. Chance to double poison strength.",
+                    "mpCost": 22,
+                    "instances": 1,
+                    "power": 0,
+                    "hitChance": 1,
+                    "status": "PSN",
+                    "statusChance": 1
+                },
+                {
+                    "type": 0,
+                    "name": "Burning Blade",
+                    "desc": "Perform a flaming double-slash upon the opponent. Chance to burn.",
+                    "mpCost": 18,
+                    "instances": 2,
+                    "power": 60,
+                    "hitChance": 1,
+                    "status": "BRN",
+                    "statusChance": 0.5
+                },
+                {
+                    "type": 1,
+                    "name": "Flamethrower",
+                    "desc": "Spur endless flames towards the oppenent!",
+                    "mpCost": 32,
+                    "instances": 10,
+                    "power": 16,
+                    "hitChance": 1,
+                    "status": "BRN",
+                    "statusChance": 1
+                }
+            ],
+            "inv": []
+        }
+    ]
+}

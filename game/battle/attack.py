@@ -93,9 +93,6 @@ class Attack_Magical(Attack):
             if self.status is not None:
                 if random.random() <= self.statusChance:
                     newInstance = copy.deepcopy(self.status)
-                    # vvv Toxic spore has a chance to have double the level - I would rather implement this in a more dynamic way (should I add more with similar effects in the future) but this works for now
-                    if self.name == "Toxic Spore":
-                        newInstance.lvl = random.randint(1,2)
                     defender.addStatus(newInstance)
 
 atkDefault = Attack_Physical("Attack", "Perform a weak attack.", 0, 1, 100, 1, None, 0)
