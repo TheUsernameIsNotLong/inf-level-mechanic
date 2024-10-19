@@ -55,6 +55,14 @@ def scr_memberName(member):
     spaces = " " * paddingAmount
     return f"{lvlLabel}{spaces}{nameLabel}"
 
+def scr_memberState(member):
+    if member.activeStates:
+        state = member.activeStates[0]
+        return f"  {state.tag} "
+    else:
+        return f"      "
+        
+
 def scr_turn(turnNum:int, party:list, enemies:list):
     if config["options"]["keepPrint"] == "false":
         os.system("cls")
@@ -64,13 +72,13 @@ def scr_turn(turnNum:int, party:list, enemies:list):
     print(f"Turn {turnNum}...")
     print()
     for member in party:
-        print(f"      {scr_memberName(member)}")
+        print(f"{scr_memberState(member)}{scr_memberName(member)}")
         print(f"      {healthBar(member)}")
         print(f"   {scr_playerHpLabel(member)} HP")
         print(f"   {scr_playerMpLabel(member)} MP")
         print()
     for member in enemies:
-        print(f"{scr_memberName(member)}")
+        print(f"{scr_memberName(member)}{scr_memberState(member)}")
         print(f"{healthBar(member)}")
         print(f"{numAbbrev(member.stats.hp)} / {numAbbrev(member.stats.maxhp)} HP")
         print()
