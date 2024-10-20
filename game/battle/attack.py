@@ -21,13 +21,17 @@ class Attack():
         self.statusChance = statusChance # Chance of the status effect inflicting
     
     def checkValid(self, attacker:Character, defender:Character):
-        if (self.mpCost <= attacker.stats.mp) and (defender.stats.hp > 0):
-            attacker.battle.pendingAction = False
-            return True
+        if self.mpCost <= attacker.stats.mp:
+            if defender.stats.hp > 0:
+                attacker.battle.pendingAction = False
+                return True
+            else:
+                print(f"{defender.name} has already been knocked out!")
+                input()
         else:
             print(f"{attacker.name} does not have the required MP!")
             input()
-            return False
+        return False
     
 class Attack_Physical(Attack):
     

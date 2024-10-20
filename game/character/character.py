@@ -12,6 +12,7 @@ class Character:
         self.modifiers = []
         # VVV Passive States VVV
         self.canHeal = True # Can recieve healing from any healing source
+        self.disabled = False # Is able to have turns in battle
         # VVV Current Actions VVV
         self.battle = None # Is this character currently in a battle?
     
