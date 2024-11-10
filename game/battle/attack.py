@@ -1,7 +1,6 @@
 import random
 import copy
 import configparser
-from game.character.character import Character
 from game.character.status import *
 
 config = configparser.ConfigParser()
@@ -10,7 +9,7 @@ config.read('config.ini')
 
 class Attack():
     
-    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
+    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status, statusChance:float):
         self.name = name
         self.desc = desc
         self.mpCost = mpCost
@@ -20,7 +19,7 @@ class Attack():
         self.status = status # Status effect an attack can inflict
         self.statusChance = statusChance # Chance of the status effect inflicting
     
-    def checkValid(self, attacker:Character, defender:Character):
+    def checkValid(self, attacker, defender):
         if self.mpCost <= attacker.stats.mp:
             if defender.stats.hp > 0:
                 attacker.battle.pendingAction = False
@@ -35,10 +34,10 @@ class Attack():
     
 class Attack_Physical(Attack):
     
-    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
+    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status, statusChance:float):
         super().__init__(name, desc, mpCost, instances, power, hitChance, status, statusChance)
     
-    def calcDamage(self, attacker:Character, defender:Character):
+    def calcDamage(self, attacker, defender):
         totalDmg = 0
         for i in range(self.instances):
             if config['options_game']['damageVarianceEnabled'] == "true":
@@ -49,7 +48,7 @@ class Attack_Physical(Attack):
             totalDmg += dmg
         return totalDmg
     
-    def do(self, attacker:Character, defender:Character):
+    def do(self, attacker, defender):
         if self.checkValid(attacker, defender):
             attacker.stats.mp -= self.mpCost
             battle = attacker.battle
@@ -68,10 +67,10 @@ class Attack_Physical(Attack):
 
 class Attack_Magical(Attack):
     
-    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status:Status, statusChance:float):
+    def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status, statusChance:float):
         super().__init__(name, desc, mpCost, instances, power, hitChance, status, statusChance)
     
-    def calcDamage(self, attacker:Character, defender:Character):
+    def calcDamage(self, attacker, defender):
         totalDmg = 0
         for i in range(self.instances):
             if config['options_game']['damageVarianceEnabled'] == "true":
@@ -82,7 +81,7 @@ class Attack_Magical(Attack):
             totalDmg += dmg
         return totalDmg
     
-    def do(self, attacker:Character, defender:Character):
+    def do(self, attacker, defender):
         if self.checkValid(attacker, defender):
             attacker.stats.mp -= self.mpCost
             battle = attacker.battle

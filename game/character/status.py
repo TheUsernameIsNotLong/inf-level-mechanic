@@ -1,5 +1,5 @@
 import random
-from math import floor, ceil
+from math import floor
 from game.core.display import scr_turn
 
 class Status:

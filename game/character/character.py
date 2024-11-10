@@ -3,7 +3,7 @@ from .stats import *
 
 class Character:
 
-    def __init__(self, name:str, stats:Stats, player:bool):
+    def __init__(self, name:str, stats, player:bool):
         self.name = name
         self.stats = stats
         self.player = player
@@ -30,7 +30,7 @@ class Character:
         if self.stats.hp == 0:
             self.addStatus(KO())
             
-    def addStatus(self, status:Status):
+    def addStatus(self, status):
         if self.battle != None:
             scr_turn(self.battle.turnNum, self.battle.party, self.battle.enemies)
         print(f"{self.name} is inflicted with {status.name}!")
@@ -39,7 +39,7 @@ class Character:
         if isinstance(status, KO): # Run status effect immediately if defeated
             status.apply(self)
     
-    def removeStatus(self, status:Status):
+    def removeStatus(self, status):
         if self.battle != None:
             scr_turn(self.battle.turnNum, self.battle.party, self.battle.enemies)
         try:
@@ -50,7 +50,7 @@ class Character:
             print(f"{self.name} is not inflicted with {status.name}!")
         input()
 
-    def checkStatus(self, status:Status):
+    def checkStatus(self, status):
         return any(isinstance(instance, type(status)) for instance in self.activeStates)
     
     def applyStatus(self):

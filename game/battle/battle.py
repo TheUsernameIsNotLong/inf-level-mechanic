@@ -1,6 +1,5 @@
 import random
 import configparser
-from game.character.character import Character
 from .attack import *
 from game.core.display import scr_turn
 from game.core.mechanics import playerChoice
@@ -43,7 +42,7 @@ class Battle:
         for member in self.activeMembers:
             self.decreaseStatusDuration(member)
     
-    def action(self, char:Character):
+    def action(self, char):
         self.pendingAction = True
         while self.pendingAction:
             scr_turn(self.turnNum, self.party, self.enemies)
@@ -65,7 +64,7 @@ class Battle:
         else:
             return self.enemies[0]
     
-    def applyDamageStates(self, char:Character):
+    def applyDamageStates(self, char):
         groupedStates = {}
         
         for status in char.activeStates:
@@ -83,14 +82,14 @@ class Battle:
             tempStatus.apply(char)
             char.checkDead()
             
-    def decreaseStatusDuration(self, char:Character):
+    def decreaseStatusDuration(self, char):
         for status in char.activeStates[:]:
             if isinstance(status, Status_Damage) or isinstance(status, Status_State):
                 status.duration -= 1
                 if status.duration < 1:
                     char.removeStatus(status)
     
-    def specialAtkMenu(self, char1:Character, char2:Character):
+    def specialAtkMenu(self, char1, char2):
         if len(char1.knownSkills) >= 2:
             print("Your skills:")
             skillList = ["<-- BACK"]+[f"{skill.name}  [{skill.mpCost} MP]" for skill in char1.knownSkills[1:]]
@@ -143,7 +142,7 @@ class Act_Attack(Act):
     def __init__(self):
         super().__init__("Attack")
     
-    def do(self, battle:Battle, char:Character, target:Character):
+    def do(self, battle, char, target):
         char.knownSkills[0].do(char, target)
 
 class Act_Special(Act):
@@ -151,7 +150,7 @@ class Act_Special(Act):
     def __init__(self):
         super().__init__("Special")
     
-    def do(self, battle:Battle, char:Character, target:Character):
+    def do(self, battle, char, target):
         battle.specialAtkMenu(char, target)
 
 
@@ -160,7 +159,7 @@ class Act_Escape(Act):
     def __init__(self):
         super().__init__("Escape")
     
-    def do(self, battle:Battle, char:Character, target:Character):
+    def do(self, battle, char, target):
         battle.end(1)
 
 battleActions = [Act_Attack(),
@@ -177,8 +176,8 @@ def expScalingModifier(party:list, enemies:list):
     scalingPower = float(config['options_game']['experienceScalingPower'])
     return 2**(levelRatio*scalingPower)
 
-def calcBattleExp(char:Character, scalingMult):
+def calcBattleExp(char, scalingMult):
     return round(scalingMult*(120*(char.stats.lvl**(2/3)) + (400 * len(char.modifiers))))
 
-def calcBattleGold(char:Character):
+def calcBattleGold(char):
     return round(10*(char.stats.lvl**0.5) + (30 * len(char.modifiers)))

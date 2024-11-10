@@ -3,7 +3,7 @@ from .proficiency import *
 
 class Stats:
     
-    def __init__(self, lvl:int, prof:Proficiency):
+    def __init__(self, lvl:int, prof):
         self.lvl = lvl
         self.prof = prof
         self.exp = 0
