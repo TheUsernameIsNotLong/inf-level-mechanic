@@ -33,13 +33,14 @@ class Battle:
     
     def turn(self):
         self.turnNum += 1
-        for member in self.party + self.enemies:
+        self.activeMembers = [member for member in self.party + self.enemies if not member.checkStatus(KO())]
+        for member in self.activeMembers:
             self.applyDamageStates(member)
-        speedOrderedMembers = sorted(self.party + self.enemies, key=lambda member: member.stats.spd, reverse=True)
+        speedOrderedMembers = sorted(self.activeMembers, key=lambda member: member.stats.spd, reverse=True)
         for member in speedOrderedMembers:
-            if self.active == True:
+            if not member.checkStatus(KO()) and self.active:
                 self.action(member)
-        for member in self.party + self.enemies:
+        for member in self.activeMembers:
             self.decreaseStatusDuration(member)
     
     def action(self, char:Character):
