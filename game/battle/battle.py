@@ -170,7 +170,7 @@ def expScalingModifier(party:list, enemies:list):
     if config['options_game']['experienceScalingEnabled'] == "true":
         enemiesLvlSum = sum(member.stats.lvl for member in enemies)
         partyLvlSum = sum(member.stats.lvl for member in party)
-        levelRatio = 10*((enemiesLvlSum/partyLvlSum) - 1)
+        levelRatio = 10*((enemiesLvlSum*len(party)**0.5)/(partyLvlSum*len(enemies)**0.5) - 1)
     else:
         levelRatio = 0
     scalingPower = float(config['options_game']['experienceScalingPower'])
