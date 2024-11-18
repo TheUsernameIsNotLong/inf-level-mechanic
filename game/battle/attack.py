@@ -32,6 +32,11 @@ class Attack():
             input()
         return False
     
+    def readSkill(self):
+        print(f"~ ~ {self.name.upper()} ~ ~")
+        print(f"POWER: {self.power} --- HITS: {self.instances}")
+        print(self.desc)
+    
 class Attack_Physical(Attack):
     
     def __init__(self, name:str, desc:str, mpCost:int, instances:int, power:float, hitChance:float, status, statusChance:float):

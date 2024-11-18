@@ -3,9 +3,10 @@ from .proficiency import *
 
 class Stats:
     
-    def __init__(self, lvl:int, prof):
+    def __init__(self, lvl:int, prof, char=None):
         self.lvl = lvl
         self.prof = prof
+        self.char = char # Changes if connected to a character class instance
         self.exp = 0
         self.maxhp = 0
         self.hp = 0
@@ -16,7 +17,11 @@ class Stats:
         self.mAtk = 0
         self.mDfc = 0
         self.spd = 0
+        
         self.setStats()
+        
+        self.lvlSkills = {} #This automatically gets changed by the Stats()'s associated Character() instance
+        
     
     def calc_lvl(exp):
         return math.floor((exp/100)**(1/2))
@@ -60,11 +65,18 @@ class Stats:
 
     def addExp(self, exp):
         self.exp += exp
-        while self.exp >= self.calc_expGoal(self.lvl): #maybe look into optimising from O(n) to O(1)
+        while self.exp >= self.calc_expGoal(self.lvl):
             self.exp -= self.calc_expGoal(self.lvl)
             self.lvl += 1
+            self.learnLvlSkills()
             print(f"You leveled up to Lvl. {self.lvl}!")
         self.setStats()
+        
+    def learnLvlSkills(self):
+        skill = self.char.lvlSkills.get(self.lvl)
+        if skill != None:
+            self.char.addSkill(skill)
+            
 
     def addLvl(self, lvl):
         exp = self.calc_expTotal(lvl + self.lvl) - self.calc_expTotal(self.lvl)

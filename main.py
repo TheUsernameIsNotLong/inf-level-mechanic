@@ -19,7 +19,7 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 50
+startLvl = 4
 
 # Deciding enemy level based on player's current level
 def determineEnemyLvl():
@@ -30,12 +30,10 @@ def determineEnemyLvl():
 player = Character(playerName, Stats(startLvl, profStandard), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
 
+player.stats.exp = player.stats.calc_expTotal(99) - 1
+
 # Granting player skills for use in battle
 player.knownSkills.append(atkDefault)
-player.knownSkills.append(atkPsnSlash)
-player.knownSkills.append(atkToxSpore)
-player.knownSkills.append(atkBurnBlade)
-player.knownSkills.append(atkFlamethrower)
 enemy.knownSkills.append(atkDefault)
 
 data.party.append(player)

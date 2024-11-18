@@ -14,7 +14,7 @@ def playerChoice(options:list, entry:str="Option: ", defaultOption:int=None):
             
 def playerConfirm(question:str=""):
     print(question)
-    if playerChoice(["Yes", "No"], defaultOption=0):
+    if playerChoice(["Yes", "No"], defaultOption=1) == 0:
         return True
     else:
         return False
