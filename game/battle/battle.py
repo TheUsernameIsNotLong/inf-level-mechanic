@@ -1,12 +1,7 @@
 import random
-import configparser
 from .attack import *
 from game.core.display import scr_turn
 from game.core.mechanics import playerChoice
-
-# Prepare config file
-config = configparser.ConfigParser()
-config.read('config.ini')
 
 class Battle:
     

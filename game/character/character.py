@@ -10,7 +10,7 @@ class Character:
         self.stats = stats
         self.stats.char = self # im not sure how i feel about this lol
         self.player = player
-        self.knownSkills = []
+        self.knownSkills = [atkDefault] # All characters start with a default attack
         self.activeStates = []
         self.modifiers = []
         # VVV Passive States VVV
@@ -19,12 +19,11 @@ class Character:
         # VVV Current Actions VVV
         self.battle = None # Is this character currently in a battle?
         
+        # VVV A character's learnable skills by level VVV
         self.lvlSkills = {5:atkPsnSlash,
                           11:atkBurnBlade,
                           17:atkToxSpore,
                           24:atkFlamethrower}
-        
-        self.stats.lvlSkills = self.lvlSkills
     
     def harm(self, hp):
         self.stats.hp -= hp
@@ -73,9 +72,10 @@ class Character:
         self.knownSkills.append(skill)
         if alert == True:
             print(f"{self.name} has learnt the skill {skill.name}!")
-            if playerConfirm(question="Would you like to read about the new skill?") == True:
-                skill.readSkill()
-                input()
+            if config['options_game']['announceLearntSkillRead'] == "true":
+                if playerConfirm(question="Would you like to read about the new skill?") == True:
+                    skill.readSkill()
+                    input()
     
     def printStats(self):
         print("~ CHARACTER SHEET ~")

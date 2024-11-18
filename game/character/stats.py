@@ -20,8 +20,6 @@ class Stats:
         
         self.setStats()
         
-        self.lvlSkills = {} #This automatically gets changed by the Stats()'s associated Character() instance
-        
     
     def calc_lvl(exp):
         return math.floor((exp/100)**(1/2))
@@ -68,8 +66,8 @@ class Stats:
         while self.exp >= self.calc_expGoal(self.lvl):
             self.exp -= self.calc_expGoal(self.lvl)
             self.lvl += 1
-            self.learnLvlSkills()
             print(f"You leveled up to Lvl. {self.lvl}!")
+            self.learnLvlSkills()
         self.setStats()
         
     def learnLvlSkills(self):

@@ -30,12 +30,6 @@ def determineEnemyLvl():
 player = Character(playerName, Stats(startLvl, profStandard), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
 
-player.stats.exp = player.stats.calc_expTotal(99) - 1
-
-# Granting player skills for use in battle
-player.knownSkills.append(atkDefault)
-enemy.knownSkills.append(atkDefault)
-
 data.party.append(player)
 
 # List of all possible encounters, this would be dependent on the player's level and area on the map, should there eventually be one

@@ -3,8 +3,8 @@ import copy
 import configparser
 from game.character.status import *
 
+# Prepare config file
 config = configparser.ConfigParser()
-
 config.read('config.ini')
 
 class Attack():
