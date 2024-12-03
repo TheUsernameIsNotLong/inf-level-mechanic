@@ -1,5 +1,5 @@
 def playerChoice(options:list, entry:str="Option: ", defaultOption:int=None):
-    for i in range(len(options)):
+    for i, choice in enumerate(options):
         print(f"{i+1}. {options[i]}")
     while True:
         try:

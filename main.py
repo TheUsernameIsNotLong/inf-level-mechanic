@@ -19,7 +19,7 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 4
+startLvl = 50 # This will change a lot through commits since I playtest with different levels
 
 # Deciding enemy level based on player's current level
 def determineEnemyLvl():
