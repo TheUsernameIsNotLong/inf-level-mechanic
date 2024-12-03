@@ -123,6 +123,8 @@ class Battle:
         
 
 
+# vvv  i do NOT think im understanding inheritence as much as i think i am...
+
 class Act:
     
     def __init__(self, name:str):
@@ -148,14 +150,15 @@ class Act_Special(Act):
     def do(self, battle, char, target):
         battle.specialAtkMenu(char, target)
 
-
 class Act_Escape(Act):
     
     def __init__(self):
         super().__init__("Escape")
     
     def do(self, battle, char, target):
+        battle.pendingAction = False
         battle.end(1)
+
 
 battleActions = [Act_Attack(),
                 Act_Special(),

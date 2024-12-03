@@ -24,6 +24,12 @@ class Character:
                           11:atkBurnBlade,
                           17:atkToxSpore,
                           24:atkFlamethrower}
+        
+        for key, value in self.lvlSkills.items():
+            if key <= self.stats.lvl:
+                self.addSkill(value)
+            else:
+                break
     
     def harm(self, hp):
         self.stats.hp -= hp
