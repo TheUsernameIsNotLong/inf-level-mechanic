@@ -1,10 +1,8 @@
 import configparser
-import copy
 import game.core.data as data
-from game.character.character import *
+from game.battle.encounter import *
 from game.battle.battle import *
 from game.battle.attack import *
-from game.character.modifier import *
 
 # Prepare config file
 config = configparser.ConfigParser()
@@ -21,28 +19,12 @@ while True:
 # Level the player starts at
 startLvl = 50 # This will change a lot through commits since I playtest with different levels
 
-# Deciding enemy level based on player's current level
-def determineEnemyLvl():
-    pLvl = player.stats.lvl
-    return random.randint(round(pLvl-(pLvl**0.5)), round(pLvl+(pLvl**0.5)))
-
 # Defining player & enemy characters
 player = Character(playerName, Stats(startLvl, profStandard), True)
 enemy = Character("Enemy", Stats(1, profStandard), False)
 
 data.party.append(player)
-
-# List of all possible encounters, this would be dependent on the player's level and area on the map, should there eventually be one
-field = [enemy]
-
-# Function for determining which enemy to encounter
-def findEnemy():
-    enemy = copy.deepcopy(random.choice(field))
-    enemy.stats.lvl = determineEnemyLvl()
-    if config['options_game']['modifiersEnabled'] == "true":
-        decideModifiers(enemy)
-    enemy.stats.setStats()
-    return enemy
+field.append(enemy)
 
 # Looping battle (for testing)
 while True:
