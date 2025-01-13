@@ -34,6 +34,7 @@ class Battle:
         speedOrderedMembers = sorted(self.activeMembers, key=lambda member: member.stats.spd, reverse=True)
         for member in speedOrderedMembers:
             if not member.checkStatus(KO()) and self.active:
+                member.changeInHealth = 0
                 self.action(member)
             
     
@@ -79,7 +80,7 @@ class Battle:
             print("Your skills:")
             skillList = [f"{skill.name}  [{skill.mpCost} MP]" for skill in specialSkills]
             choice = playerChoice(skillList, entry="Which special move: ")
-            if choice >= 1:
+            if choice >= 0:
                 specialSkills[choice].do(user)
     
     def checkWipeout(self):

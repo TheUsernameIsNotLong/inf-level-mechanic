@@ -15,6 +15,7 @@ class Character:
         self.modifiers = []
         # VVV Passive States VVV
         self.inflictedThisTurn = False # Prevents multiple status inflictions when targetted from a multi-instance skill
+        self.changeInHealth = 0 # The change in health this turn
         self.canHeal = True # Can recieve healing from any healing source
         self.disabled = False # Is able to have turns in battle
         # VVV Current Actions VVV
@@ -34,14 +35,16 @@ class Character:
                 break
     
     def harm(self, hp):
+        if self.stats.hp - hp < 0:
+            hp = self.stats.hp # Do not allow negative health
         self.stats.hp -= hp
-        if self.stats.hp <= 0:
-            self.stats.hp = 0 # Do not allow negative health
+        self.changeInHealth = -hp
     
     def heal(self, hp):
+        if self.stats.hp + hp > self.stats.maxhp:
+            hp = self.stats.maxhp - self.stats.hp # Do not allow overhealing
         self.stats.hp += hp
-        if self.stats.hp > self.stats.maxhp:
-            self.stats.hp = self.stats.maxhp
+        self.changeInHealth = hp
             
     def checkDead(self):
         if self.stats.hp == 0:

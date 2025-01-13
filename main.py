@@ -17,11 +17,11 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 5 # This will change a lot through commits since I playtest with different levels
+startLvl = 32 # This will change a lot through commits since I playtest with different levels
 
 # Defining player & enemy characters
 player = Character(playerName, Stats(startLvl, profStandard), True)
-enemy = Character("Enemy", Stats(1, profWK), False)
+enemy = Character("Enemy", Stats(1, profStandard), False)
 
 data.party.append(player)
 field.append(enemy)

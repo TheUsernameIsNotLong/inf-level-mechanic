@@ -6,13 +6,50 @@ import math
 config = configparser.ConfigParser()
 config.read('config.ini')
 
+# Foreground colors
+BLK = "\033[30m"
+RED = "\033[31m"
+GRN = "\033[32m"
+YEL = "\033[33m"
+BLU = "\033[34m"
+MAG = "\033[35m"
+CYN = "\033[36m"
+WHT = "\033[37m"
+
+BR_BLK = "\033[90m"
+BR_RED = "\033[91m"
+BR_GRN = "\033[92m"
+BR_YEL = "\033[93m"
+BR_BLU = "\033[94m"
+BR_MAG = "\033[95m"
+BR_CYN = "\033[96m"
+BR_WHT = "\033[97m"
+
+# Styles
+BOLD = "\033[1m"
+ULINE = "\033[4m"
+RESET = "\033[0m"  # Reset to default color and style
+
+def colourText(text:str, colour:str):
+    return f"{colour}{text}{RESET}"
+
+# Stat bar display
+
 hp_Bars = 20
 mp_Bars = 20
 
 def statBar(char, stat_Bars:int):
     stat_Remaining = round(stat_Bars*char.stats.hp/char.stats.maxhp)
-    stat_Lost = stat_Bars-stat_Remaining
-    stat_all = "|" + "█" * stat_Remaining + "_" * stat_Lost + "|"
+    stat_Change = round(stat_Bars*abs(char.changeInHealth)/char.stats.maxhp)
+    if char.changeInHealth > 0:
+        change = colourText("█",GRN) * stat_Change
+        stat_Remaining -= stat_Change
+    elif char.changeInHealth < 0:
+        change = colourText("█",YEL) * stat_Change
+    else:
+        change = ""
+    stat_Lost = stat_Bars-(stat_Remaining+stat_Change)
+    stat_all = "|" + "█" * stat_Remaining + change + "_" * stat_Lost + "|"
     return stat_all
 
 def healthBar(char):
