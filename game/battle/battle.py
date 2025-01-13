@@ -30,34 +30,23 @@ class Battle:
         self.activeMembers = [member for member in self.party + self.enemies if not member.checkStatus(KO())]
         for member in self.activeMembers:
             self.applyDamageStates(member)
+            self.decreaseStatusDuration(member)
         speedOrderedMembers = sorted(self.activeMembers, key=lambda member: member.stats.spd, reverse=True)
         for member in speedOrderedMembers:
             if not member.checkStatus(KO()) and self.active:
                 self.action(member)
-        for member in self.activeMembers:
-            self.decreaseStatusDuration(member)
+            
     
-    def action(self, char):
+    def action(self, user):
         self.pendingAction = True
         while self.pendingAction:
             scr_turn(self.turnNum, self.party, self.enemies)
-            if char.player == True:
-                choice = playerChoice([action.name for action in battleActions], entry=f"{char.name}'s turn: ")
-                battleActions[choice].do(self, char, self.playerChooseTarget())
+            if user.player == True:
+                choice = playerChoice([action.name for action in battleActions], entry=f"{user.name}'s turn: ", returnOption=False)
+                battleActions[choice].do(self, user)
             else:
-                target = random.choice(self.party)
-                char.knownSkills[0].do(char, target)
-    
-    def playerChooseTarget(self):
-        if len(self.enemies) > 1:
-            if config['options_battle']['autoTargeting'] == "true":
-                return random.choice(self.enemies)
-            else:
-                print("Available targets:")
-                choice = playerChoice([enemy.name for enemy in self.enemies], entry="Which enemy: ")
-                return self.enemies[choice]
-        else:
-            return self.enemies[0]
+                user.knownSkills[0].do(user)
+        self.checkWipeout()
     
     def applyDamageStates(self, char):
         groupedStates = {}
@@ -84,13 +73,22 @@ class Battle:
                 if status.duration < 1:
                     char.removeStatus(status)
     
-    def specialAtkMenu(self, char1, char2):
-        if len(char1.knownSkills) >= 2:
+    def specialAtkMenu(self, user):
+        specialSkills = user.knownSkills[1:]
+        if len(specialSkills) >= 1:
             print("Your skills:")
-            skillList = ["<-- BACK"]+[f"{skill.name}  [{skill.mpCost} MP]" for skill in char1.knownSkills[1:]]
+            skillList = [f"{skill.name}  [{skill.mpCost} MP]" for skill in specialSkills]
             choice = playerChoice(skillList, entry="Which special move: ")
             if choice >= 1:
-                char1.knownSkills[choice].do(char1, char2)
+                specialSkills[choice].do(user)
+    
+    def checkWipeout(self):
+        if all(member.stats.hp == 0 for member in self.party):
+            self.end(0)
+        elif all(member.stats.hp == 0 for member in self.enemies):
+            self.end(2)
+        else:
+            return None
     
     def end(self, outcome:int):
         self.active = False
@@ -119,6 +117,7 @@ class Battle:
             print("The battle ended unnaturally...?")
         for member in self.party + self.enemies:
             member.battle = None
+            member.activeStates.clear()
         return
         
 
@@ -139,23 +138,23 @@ class Act_Attack(Act):
     def __init__(self):
         super().__init__("Attack")
     
-    def do(self, battle, char, target):
-        char.knownSkills[0].do(char, target)
+    def do(self, battle, char):
+        char.knownSkills[0].do(char)
 
 class Act_Special(Act):
     
     def __init__(self):
         super().__init__("Special")
     
-    def do(self, battle, char, target):
-        battle.specialAtkMenu(char, target)
+    def do(self, battle, char):
+        battle.specialAtkMenu(char)
 
 class Act_Escape(Act):
     
     def __init__(self):
         super().__init__("Escape")
     
-    def do(self, battle, char, target):
+    def do(self, battle, char):
         battle.pendingAction = False
         battle.end(1)
 

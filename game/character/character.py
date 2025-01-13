@@ -10,20 +10,22 @@ class Character:
         self.stats = stats
         self.stats.char = self # im not sure how i feel about this lol
         self.player = player
-        self.knownSkills = [atkDefault] # All characters start with a default attack
+        self.knownSkills = [sklDefault] # All characters start with a default attack
         self.activeStates = []
         self.modifiers = []
         # VVV Passive States VVV
+        self.inflictedThisTurn = False # Prevents multiple status inflictions when targetted from a multi-instance skill
         self.canHeal = True # Can recieve healing from any healing source
         self.disabled = False # Is able to have turns in battle
         # VVV Current Actions VVV
         self.battle = None # Is this character currently in a battle?
         
         # VVV A character's learnable skills by level VVV
-        self.lvlSkills = {5:atkPsnSlash,
-                          11:atkBurnBlade,
-                          17:atkToxSpore,
-                          24:atkFlamethrower}
+        self.lvlSkills = {3:sklHeal,
+                          5:sklPsnSlash,
+                          11:sklBrnBlade,
+                          17:sklToxSpore,
+                          24:sklFlamethrower}
         
         for key, value in self.lvlSkills.items():
             if key <= self.stats.lvl:

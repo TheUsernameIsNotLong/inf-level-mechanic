@@ -53,13 +53,6 @@ class KO(Status_Special):
     def apply(self, char):
         print(f"{char.name} has been knocked out!")
         char.canHeal = False
-        if char.battle != None:
-            if all(member.stats.hp == 0 for member in char.battle.party) or all(member.stats.hp == 0 for member in char.battle.enemies):
-                if char.player == True:
-                    char.battle.end(0)
-                else:
-                    char.battle.end(2)
-                char.removeStatus(self)
     
 class Poison(Status_Damage):
     def __init__(self, lvl:float=1, duration:int=4):
