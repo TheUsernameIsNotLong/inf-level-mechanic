@@ -17,7 +17,7 @@ while True:
         print("Your name should be between 1 and 20 letters long!") 
 
 # Level the player starts at
-startLvl = 32 # This will change a lot through commits since I playtest with different levels
+startLvl = 50 # This will change a lot through commits since I playtest with different levels
 
 # Defining player & enemy characters
 player = Character(playerName, Stats(startLvl, profStandard), True)

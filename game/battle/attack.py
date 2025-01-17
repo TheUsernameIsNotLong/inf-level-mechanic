@@ -60,7 +60,7 @@ class TargetSelector:
                     print("Invalid target type")
                     return None
         except:
-            return [self.user]
+            return [] # Default to user if something goes wrong - only seen happening so far when random.choices checks an empty list
 
 class Skill:
     
@@ -145,17 +145,20 @@ class Skill_Segment:
 
     def do(self, user, battle):
         targetSelector = TargetSelector(battle, user)
-        if user.player:
+        if user.player is True:
             while True:
                 self.target = targetSelector.getTargets(self.targetType)
                 if len(self.target) > 0:
                     user.battle.pendingAction = False
                     break
                 else:
-                    print(f"There's no one to target!")
-                    input()
+                    if all(member.stats.hp == 0 for member in battle.party) or all(member.stats.hp == 0 for member in battle.enemies):
+                        break
+                    else:
+                        print(f"There's no one to target!")
+                        input()
         else:
-            self.target = [random.choice(battle.party)]
+            self.target = [random.choice(battle.party)] # Change this before giving enemies healing spells! :)
 
         if self.power > 0:
             for target in self.target:

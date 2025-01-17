@@ -114,6 +114,7 @@ class Battle:
             memberBattleExp = (2*totalBattleExp)/len(self.party)
             for member in self.party:
                 member.stats.addExp(memberBattleExp)
+            input()
         else:
             print("The battle ended unnaturally...?")
         for member in self.party + self.enemies:
