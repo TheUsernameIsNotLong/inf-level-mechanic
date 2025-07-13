@@ -1,3 +1,10 @@
+""" 
+Modules imported:
+- configparser: For configuration file handling.
+- os: For operating system dependent functionality.
+- math: For mathematical operations.
+"""
+
 import configparser
 import os
 import math
@@ -30,93 +37,104 @@ BOLD = "\033[1m"
 ULINE = "\033[4m"
 RESET = "\033[0m"  # Reset to default color and style
 
-def colourText(text:str, colour:str):
+def colour_text(text:str, colour:str):
+    """Returns the text wrapped in ANSI escape codes for colouring."""
     return f"{colour}{text}{RESET}"
 
 # Stat bar display
 
-hp_Bars = 20
-mp_Bars = 20
+HP_BARS = 20
+MP_BARS = 20
 
-def statBar(char, stat_Bars:int):
-    stat_Remaining = round(stat_Bars*char.stats.hp/char.stats.maxhp)
-    stat_Change = round(stat_Bars*abs(char.changeInHealth)/char.stats.maxhp)
-    if char.changeInHealth > 0:
-        change = colourText("█",GRN) * stat_Change
-        stat_Remaining -= stat_Change
-    elif char.changeInHealth < 0:
-        change = colourText("█",YEL) * stat_Change
+def stat_bar(char, stat_bars:int):
+    """Generates a health or mana bar for the character."""
+    stat_remaining = round(stat_bars*char.stats.hp/char.stats.maxhp)
+    stat_change = round(stat_bars*abs(char.change_in_health)/char.stats.maxhp)
+    if char.change_in_health > 0:
+        change = colour_text("█",GRN) * stat_change
+        stat_remaining -= stat_change
+    elif char.change_in_health < 0:
+        change = colour_text("█",YEL) * stat_change
     else:
         change = ""
-    stat_Lost = stat_Bars-(stat_Remaining+stat_Change)
-    stat_all = "|" + "█" * stat_Remaining + change + "_" * stat_Lost + "|"
+    stat_lost = stat_bars-(stat_remaining+stat_change)
+    stat_all = "|" + "█" * stat_remaining + change + "_" * stat_lost + "|"
     return stat_all
 
-def healthBar(char):
-    return statBar(char, hp_Bars)
+def health_bar(char):
+    """Generates a health bar for the character."""
+    return stat_bar(char, HP_BARS)
 
-def manaBar(char):
-    return statBar(char, mp_Bars)
+def mana_bar(char):
+    """Generates a mana bar for the character."""
+    return stat_bar(char, MP_BARS)
 
-def numAbbrev(num:float):
+def num_abbrev(num:float):
+    """Abbreviates large numbers for display."""
     suffix = ["", "K", "M", "B", "T", "Qd", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]
     if num < 1000:
         return num
     size = int(math.log10(num) // 3)
     if size <= len(suffix):
-        newNum = num / (10 ** (3 * size))
-        newNum = f"{newNum:.3g}"
-        return f"{newNum}{suffix[size]}"
+        new_num = num / (10 ** (3 * size))
+        new_num = f"{new_num:.3g}"
+        return f"{new_num}{suffix[size]}"
     else:
-        newNum = f"{num / (10 ** math.log10(num)):.1f}"
-        return f"{newNum}e{round(math.log10(num))}"
+        new_num = f"{num / (10 ** math.log10(num)):.1f}"
+        return f"{new_num}e{round(math.log10(num))}"
 
-def scr_playerStatLabel(member, current, max):
-    numCurrent = str(numAbbrev(current))
-    numMax = str(numAbbrev(max))
-    paddingAmount = (hp_Bars+2) - (len(numCurrent)+len(numMax)+3) # +3 for " / "
-    spaces = " " * paddingAmount
-    return f"{spaces}{numCurrent} / {numMax}"
+def scr_player_stat_label(current, max_length):
+    """Generates a label for player stats with current and max values."""
+    num_current = str(num_abbrev(current))
+    num_max = str(num_abbrev(max_length))
+    padding_amount = (HP_BARS+2) - (len(num_current)+len(num_max)+3) # +3 for " / "
+    spaces = " " * padding_amount
+    return f"{spaces}{num_current} / {num_max}"
 
-def scr_playerHpLabel(member):
-    return scr_playerStatLabel(member, member.stats.hp, member.stats.maxhp)
+def scr_player_hp_label(member):
+    """Generates a label for player HP."""
+    return scr_player_stat_label(member.stats.hp, member.stats.maxhp)
 
-def scr_playerMpLabel(member):
-    return scr_playerStatLabel(member, member.stats.mp, member.stats.maxmp)
+def scr_player_mp_label(member):
+    """Generates a label for player MP."""
+    return scr_player_stat_label(member.stats.mp, member.stats.maxmp)
 
-def scr_memberName(member):
-    maxNameLen = (hp_Bars+3) - 11 # +2 for each end of the HP bar, +1 for allowing at least 1 space between name and lvl, -10 for maximum abbreviated lvl length
-    nameLabel = member.name[:maxNameLen]
-    lvlLabel = f"LV. {numAbbrev(member.stats.lvl)}"
-    paddingAmount = (hp_Bars+2) - (len(nameLabel)+len(lvlLabel))
-    spaces = " " * paddingAmount
-    return f"{lvlLabel}{spaces}{nameLabel}"
+def scr_member_name(member):
+    """Generates a label for the member's name and level."""
+    max_name_len = (HP_BARS+3) - 11 # +2 for each end of the HP bar, +1 for allowing at least 1 space between name and lvl, -10 for maximum abbreviated lvl length
+    name_label = member.name[:max_name_len]
+    lvl_label = f"LV. {num_abbrev(member.stats.lvl)}"
+    padding_amount = (HP_BARS+2) - (len(name_label)+len(lvl_label))
+    spaces = " " * padding_amount
+    return f"{lvl_label}{spaces}{name_label}"
 
-def scr_memberState(member):
-    if member.activeStates:
-        state = member.activeStates[0]
+def scr_member_state(member):
+    """Generates a label for the member's current status state."""
+    if member.active_states:
+        state = member.active_states[0]
         return f"  {state.tag} "
     else:
-        return f"      "
-        
+        return "      "
 
-def scr_turn(turnNum:int, party:list, enemies:list):
+
+def scr_turn(turn_num:int, party:list, enemies:list):
+    """Displays the current turn information and character states."""
     if config["options"]["keepPrint"] == "false":
         os.system("cls")
     print(f"~~~~~~~~~~ {len(party)} VS {len(enemies)} ~~~~~~~~~~")
     print("~~~~~~~~~~ BATTLE ~~~~~~~~~~")
     print()
-    print(f"Turn {turnNum}...")
+    print(f"Turn {turn_num}...")
     print()
     for member in party:
-        print(f"{scr_memberState(member)}{scr_memberName(member)}")
-        print(f"      {healthBar(member)}")
-        print(f"   {scr_playerHpLabel(member)} HP")
-        print(f"   {scr_playerMpLabel(member)} MP")
+        print(f"{scr_member_state(member)}{scr_member_name(member)}")
+        print(f"      {health_bar(member)}")
+        print(f"   {scr_player_hp_label(member)} HP")
+        print(f"   {scr_player_mp_label(member)} MP")
         print()
     for member in enemies:
-        print(f"{scr_memberName(member)}{scr_memberState(member)}")
-        print(f"{healthBar(member)}")
-        print(f"{numAbbrev(member.stats.hp)} / {numAbbrev(member.stats.maxhp)} HP")
+        print(f"{scr_member_name(member)}{scr_member_state(member)}")
+        print(f"{health_bar(member)}")
+        print(f"{num_abbrev(member.stats.hp)} / {num_abbrev(member.stats.maxhp)} HP")
         print()
     print("----------------------------")

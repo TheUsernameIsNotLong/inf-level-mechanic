@@ -1,23 +1,22 @@
+""" 
+Modules imported:
+- dataclasses: For defining data classes.
+"""
+
+from dataclasses import dataclass
+
+@dataclass
 class Proficiency:
-    
-    def __init__(self, name:str, hp:int=0, mp:int=0, atk:int=0, dfc:int=0, mAtk:int=0, mDfc:int=0, spd:int=0):
-        
-        #  3 -> S Rank (best)
-        #  2 -> A Rank
-        #  1 -> B Rank
-        #  0 -> C Rank (standard)
-        # -1 -> D Rank
-        # -2 -> E Rank
-        # -3 -> F Rank (worst)
-        
-        self.name = name
-        self.hp = hp
-        self.mp = mp
-        self.atk = atk
-        self.dfc = dfc
-        self.mAtk = mAtk
-        self.mDfc = mDfc
-        self.spd = spd
+    """Class representing character proficiency, affecting various stats."""
+
+    name: str
+    hp: int
+    mp: int
+    atk: int
+    dfc: int
+    m_atk: int
+    m_dfc: int
+    spd: int
 
 # Proficiency sets
 profStandard = Proficiency("Standard",0,0,0,0,0,0,0)

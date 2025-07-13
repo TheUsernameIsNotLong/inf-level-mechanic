@@ -1,12 +1,23 @@
+""" 
+This module still uses the old attack system, using Physical_Attack and Magical_Attack classes,
+as opposed to the new Skill_Segment and Skill classes.
+
+Modules imported:
+- json: For JSON file handling.
+- game.character.character: For character management.
+- game.battle.attack: For attack management.
+"""
+
 import json
 from game.character.character import *
 from game.battle.attack import *
 
 party = []
 
-selectedFile = "saves/file1.json"
+SELECTED_FILE = "saves/file1.json"
 
-def getMemberData(member):
+def get_member_data(member):
+    """Converts a Character object to a dictionary."""
     return {
         "name": member.name,
         "lvl": member.stats.lvl,
@@ -23,7 +34,8 @@ def getMemberData(member):
         "inv": []
     }
 
-def getSkillData(skill):
+def get_skill_data(skill):
+    """Converts a skill object to a dictionary."""
     return {
         "type": 0,
         "name": skill.name,
@@ -35,14 +47,16 @@ def getSkillData(skill):
         "status": skill.status.tag if skill.status else None,
         "statusChance": skill.statusChance
     }
-    
-def setMemberData(member):
+
+def set_member_data(member):
+    """Converts a member dictionary to a Character object."""
     return Character(member["name"],
                      Stats(member["lvl"],
-                           setProficiencyData(member["proficiency"])),
+                           set_proficiency_data(member["proficiency"])),
                      True)
 
-def setProficiencyData(prof):
+def set_proficiency_data(prof):
+    """Converts a proficiency dictionary to a Proficiency object."""
     return Proficiency("custom",
                        prof["hp"],
                        prof["mp"],
@@ -52,9 +66,10 @@ def setProficiencyData(prof):
                        prof["mDfc"],
                        prof["spd"])
 
-def setSkillData(skill):
-    statusClass = availableStates.get(skill["status"])
-    statusInstance = statusClass() if statusClass else None
+def set_skill_data(skill):
+    """Converts a skill dictionary to an Attack object."""
+    status_class = availableStates.get(skill["status"])
+    status_instance = statusClass() if status_class else None
     if skill["type"] == 0:
         return Attack_Physical(skill["name"],
                                skill["desc"],
@@ -75,26 +90,28 @@ def setSkillData(skill):
                               skill["statusChance"])
 
 def save():
+    """Saves the current party data to a JSON file."""
     data = {"party":[]}
     for member in party:
-        memberData = getMemberData(member)
-        data["party"].append(memberData)
+        member_data = get_member_data(member)
+        data["party"].append(member_data)
         for skill in member.knownSkills:
-            skillData = getSkillData(skill)
+            skill_data = get_skill_data(skill)
             if isinstance(skill, Attack_Magical):
-                skillData["type"] = 1
-            memberData["knownSkills"].append(skillData)
-    with open(selectedFile, "w") as f:
+                skill_data["type"] = 1
+            member_data["knownSkills"].append(skill_data)
+    with open(SELECTED_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
 def load():
-    with open(selectedFile, "r") as f:
+    """Loads party data from a JSON file."""
+    with open(SELECTED_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
     print(data)
     party.clear()
     for member in data["party"]:
-        memberInstance = setMemberData(member)
+        member_instance = set_member_data(member)
         for skill in member["knownSkills"]:
-            skillInstance = setSkillData(skill)
-            memberInstance.knownSkills.append(skillInstance)
-        party.append(memberInstance)
+            skill_instance = set_skill_data(skill)
+            member_instance.known_skills.append(skill_instance)
+        party.append(member_instance)
